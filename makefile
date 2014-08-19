@@ -32,7 +32,31 @@ ensure_build_image = \
 	|| docker pull $(BUILD_REPO):$(BUILD_REPO_TAG) \
 	|| docker build -t $(BUILD_REPO):$(BUILD_REPO_TAG) build_img
 
+# Normalize DESTDIR so we can use this idiom in our install targets:
+# $(_DESTDIR)$(prefix)
+# and not end up with double slashes.
+ifneq "$(DESTDIR)" ""
+    PREFIX_HAS_LEADING_SLASH = $(patsubst /%,/,$(prefix))
+    ifeq "$(PREFIX_HAS_LEADING_SLASH)" "/"
+        _DESTDIR := $(shell echo $(DESTDIR) | sed -e "s|\/$$||g")
+    else
+        _DESTDIR := $(shell echo $(DESTDIR) | sed -e "s|\/$$||g" -e "s|$$|\/|g")
+    endif
+endif
+
 export: $(EXPORTED_FILE)
+
+.PHONY: pkg
+pkg: docker_isvcs_src = /serviced-isvcs
+pkg: $(EXPORTED_FILE)
+	eval $(ensure_build_image)
+	docker run --rm -v `pwd`:$(docker_isvcs_src) $(BUILD_REPO):$(BUILD_REPO_TAG) \
+		/bin/bash -c "cd $(docker_isvcs_src)/pkg && make clean deb rpm"
+
+install: dest = $(_DESTDIR)$(prefix)/$(REPO)
+install:
+	mkdir -p $(dest)
+	cp $(EXPORTED_FILE) $(dest)
 
 $(EXPORTED_FILE):
 	mkdir -p $(REPO_DIR)/$(REPO)
@@ -57,6 +81,7 @@ $(BUILD_DIR)/%.tar.gz:
 clean:
 	rm -rf $(BUILD_DIR)/*.tar.gz
 	rm -rf $(REPO_DIR)
+	cd pkg && make clean
 	docker rmi $(REPO):$(TAG) >/dev/null 2>&1 || exit 0
 
 mrclean: clean

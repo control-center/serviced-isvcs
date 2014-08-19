@@ -20,13 +20,11 @@ THIS_MAKEFILE := $(notdir $(CURDIR)/$(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_
 # NAME is typically overridden from the toplevel make:
 #    e.g. make -f servicedef.mk NAME=zenoss-core
 #
-NAME          = product
-FULL_NAME     = $(NAME)-service
-#FROMVERSION  = 0.3.70
-VERSION       = 5.0.0
+NAME          = serviced-isvcs
+VERSION       = 0.14
 RELEASE_PHASE = 
 MAINTAINER    ="Zenoss CM <cm@zenoss.com>"
-PKGROOT       = pkgroot_$(FULL_NAME)
+PKGROOT       = pkgroot_$(NAME)
 
 ifeq "$(BUILD_NUMBER)" ""
 PKG_VERSION = $(VERSION)$(RELEASE_PHASE)
@@ -41,11 +39,9 @@ DEB_PKG_VERSION = $(FROMVERSION)+$(PKG_VERSION)
 endif
 
 define DESCRIPTION
-Service definitions for $(NAME).
-These definitions allow $(NAME) to be instantiated by the
-Zenoss Control Center serviced application into a runtime environment that
-leverages the scalability, performance, and deployment lifecycle associated
-with Docker containers.
+Packaged image for Zenoss Control Center internal services.
+This packaged Docker image provides for installation of the serviced-isvcs image
+without internet access to Docker Hub.
 endef
 export DESCRIPTION
 
@@ -55,11 +51,11 @@ export DESCRIPTION
 all: desc
 
 desc:
-	echo "Usage: make deb or make rpm. Both options package $(FULL_NAME)-$(PKG_VERSION)."
+	echo "Usage: make deb or make rpm. Both options package $(NAME)-$(PKG_VERSION)."
 
 .PHONY: clean_files
 clean_files:
-	@for pkg in $(FULL_NAME)*.deb $(FULL_NAME)*.rpm ;\
+	@for pkg in $(NAME)*.deb $(NAME)*.rpm ;\
 	do \
 		if [ -f "$${pkg}" ];then \
 			echo "rm -f $${pkg}" ;\
@@ -94,29 +90,25 @@ clean_dirs:
 .PHONY: clean
 clean: clean_files clean_dirs
 
-.PHONY: clean_templates
-clean_templates:
-	find templates -type f ! -name 'README.txt' -exec rm {} + # remove everything under templates except README.txt
-
 .PHONY: mrclean
-mrclean: clean clean_templates
+mrclean: clean
 
 # Make root dir for packaging
 $(PKGROOT):
 	mkdir -p $@
 
 stage_deb: 
-	$(MAKE) -f $(THIS_MAKEFILE) clean clean_dirs=$(PKGROOT)
-	cd ../ && $(MAKE) install DESTDIR=$(abspath $(PKGROOT)) PKG=deb INSTALL_TEMPLATES_ONLY=1
+	$(MAKE) -f $(THIS_MAKEFILE) clean_dirs clean_dirs=$(PKGROOT)
+	cd ../ && $(MAKE) install DESTDIR=$(abspath $(PKGROOT)) PKG=deb
 
 stage_rpm:
-	$(MAKE) -f $(THIS_MAKEFILE) clean clean_dirs=$(PKGROOT)
-	cd ../ && $(MAKE) install DESTDIR=$(abspath $(PKGROOT)) PKG=rpm INSTALL_TEMPLATES_ONLY=1
+	$(MAKE) -f $(THIS_MAKEFILE) clean_dirs clean_dirs=$(PKGROOT)
+	cd ../ && $(MAKE) install DESTDIR=$(abspath $(PKGROOT)) PKG=rpm
 
 # Make a DEB
 deb: stage_deb
 	fpm \
-		-n $(FULL_NAME) \
+		-n $(NAME) \
 		-v $(DEB_PKG_VERSION) \
 		-s dir \
 		-d serviced \
@@ -132,7 +124,7 @@ deb: stage_deb
 # Make an RPM
 rpm: stage_rpm
 	fpm \
-		-n $(FULL_NAME) \
+		-n $(NAME) \
 		-v $(PKG_VERSION) \
 		-s dir \
 		-d serviced \
