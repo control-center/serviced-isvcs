@@ -25,3 +25,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
 
 RUN apt-get -y install maven
 RUN apt-get -y install python-virtualenv
+
+RUN apt-get -y install ruby-dev gcc
+RUN gem install fpm
+RUN apt-get -y install rpm

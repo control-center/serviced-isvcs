@@ -15,18 +15,26 @@ COMPONENT_NAMES    := es_serviced es_logstash zk opentsdb logstash query consume
 HERE               := $(shell pwd)
 UID                := $(shell id -u)
 BUILD_DIR          := build
-BUILD_REPO         := zenoss/isvcs_build
 REPO               := zenoss/serviced-isvcs
 TAG                := v14
+BUILD_REPO         := zenoss/isvcs_build
+BUILD_REPO_TAG     := v1
 REPO_DIR           := images
 EXPORTED_FILE      := $(REPO_DIR)/$(REPO)/$(TAG).tar.gz
 COMPONENT_ARCHIVES := $(foreach cname, $(COMPONENT_NAMES), $(BUILD_DIR)/$(cname).tar.gz)
 EXPORT_CONTAINER_ID:= .isvcs_export_container_id
 GZIP               := $(shell which pigz || which gzip)
 
-export: $(REPO_DIR)/$(REPO)/$(TAG).tar.gz
+prefix = /opt/serviced/images
 
-$(REPO_DIR)/$(REPO)/$(TAG).tar.gz: repo
+ensure_build_image = \
+	docker images $(BUILD_REPO) 2>/dev/null | awk '$$2~/$(BUILD_REPO_TAG)/{found=1}END{exit!found}' \
+	|| docker pull $(BUILD_REPO):$(BUILD_REPO_TAG) \
+	|| docker build -t $(BUILD_REPO):$(BUILD_REPO_TAG) build_img
+
+export: $(EXPORTED_FILE)
+
+$(EXPORTED_FILE):
 	mkdir -p $(REPO_DIR)/$(REPO)
 	rm -f $(EXPORT_CONTAINER_ID)
 	docker run --cidfile=$(EXPORT_CONTAINER_ID) -d $(REPO):$(TAG) echo ""
@@ -39,10 +47,11 @@ repo: $(COMPONENT_ARCHIVES)
 	docker build -t $(REPO):$(TAG) $(BUILD_DIR);
 
 $(BUILD_DIR)/%.tar.gz:
-	@[ -n "$$(docker images -q $(BUILD_REPO) 2>/dev/null)" ] \
-		|| docker pull $(BUILD_REPO) \
-		|| docker build -t $(BUILD_REPO) build_img
-	docker run --rm -v $(HERE)/$(*):/tmp/in -v $(HERE)/$(BUILD_DIR):/tmp/out -w /tmp/in $(BUILD_REPO) \
+	eval $(ensure_build_image)
+	docker run --rm \
+		-v $(HERE)/$(*):/tmp/in \
+		-v $(HERE)/$(BUILD_DIR):/tmp/out \
+		-w /tmp/in $(BUILD_REPO):$(BUILD_REPO_TAG) \
 		bash -c "make TARGET=/tmp/out; chown -R $(UID):$(UID) /tmp/out/$(notdir $(@))"
 
 clean:
@@ -51,4 +60,4 @@ clean:
 	docker rmi $(REPO):$(TAG) >/dev/null 2>&1 || exit 0
 
 mrclean: clean
-	docker rmi $(BUILD_REPO) >/dev/null 2>&1 || exit 0
+	docker rmi $(BUILD_REPO):$(BUILD_REPO_TAG) >/dev/null 2>&1 || exit 0
