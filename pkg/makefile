@@ -21,7 +21,7 @@ THIS_MAKEFILE := $(notdir $(CURDIR)/$(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_
 #    e.g. make -f servicedef.mk NAME=zenoss-core
 #
 NAME          = serviced-isvcs
-VERSION       = 0.14
+VERSION       = 0.$(MINOR_VERSION)
 RELEASE_PHASE = 
 MAINTAINER    ="Zenoss CM <cm@zenoss.com>"
 PKGROOT       = pkgroot_$(NAME)

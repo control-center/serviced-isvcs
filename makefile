@@ -16,7 +16,8 @@ HERE               := $(shell pwd)
 UID                := $(shell id -u)
 BUILD_DIR          := build
 REPO               := zenoss/serviced-isvcs
-TAG                := v15
+VERSION            := 15
+TAG                := v$(VERSION)
 BUILD_REPO         := zenoss/isvcs_build
 BUILD_REPO_TAG     := v1
 REPO_DIR           := images
@@ -51,7 +52,7 @@ pkg: docker_isvcs_src = /serviced-isvcs
 pkg: $(EXPORTED_FILE)
 	eval $(ensure_build_image)
 	docker run --rm -v `pwd`:$(docker_isvcs_src) $(BUILD_REPO):$(BUILD_REPO_TAG) \
-		/bin/bash -c "cd $(docker_isvcs_src)/pkg && make clean deb rpm"
+		/bin/bash -c "cd $(docker_isvcs_src)/pkg && make MINOR_VERSION=$(VERSION) clean deb rpm"
 
 install: dest = $(_DESTDIR)$(prefix)/$(REPO)
 install:
