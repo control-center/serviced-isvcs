@@ -25,6 +25,14 @@ VERSION       = 0.14
 RELEASE_PHASE = 
 MAINTAINER    ="Zenoss CM <cm@zenoss.com>"
 PKGROOT       = pkgroot_$(NAME)
+# https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#license-specification
+DEB_LICENSE   = Apache-2
+# https://fedoraproject.org/wiki/Licensing:Main?rd=Licensing
+RPM_LICENSE   = "ASL 2.0"
+VENDOR        = "Zenoss, Inc."
+URL           = http://controlcenter.io/
+DEB_PRIORITY  = extra
+CATEGORY      = admin
 
 ifeq "$(BUILD_NUMBER)" ""
 PKG_VERSION = $(VERSION)$(RELEASE_PHASE)
@@ -119,6 +127,11 @@ deb: stage_deb
 		--description "$$DESCRIPTION" \
 		--deb-user root \
 		--deb-group root \
+		--license $(DEB_LICENSE) \
+		--vendor $(VENDOR) \
+		--url $(URL) \
+		--category $(CATEGORY) \
+		--deb-priority $(DEB_PRIORITY) \
 		.
 
 # Make an RPM
@@ -135,4 +148,8 @@ rpm: stage_rpm
 		--description "$$DESCRIPTION" \
 		--rpm-user root \
 		--rpm-group root \
+		--license $(RPM_LICENSE) \
+		--vendor $(VENDOR) \
+		--url $(URL) \
+		--category $(CATEGORY) \
 		.
