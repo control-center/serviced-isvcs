@@ -15,6 +15,7 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/
     python ez_setup.py; \
     easy_install pip; \
     rm -rf /var/lib/apt/lists/*_* /tmp/*
+RUN pip install backports.lzma==0.0.2
 RUN git clone --branch 0.7.3 --depth 1 https://github.com/dotcloud/docker-registry.git && \
     cd docker-registry && \
     echo "serviced:"                                                               >> config/config_sample.yml && \
