@@ -15,6 +15,7 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/
     python ez_setup.py; \
     easy_install pip; \
     rm -rf /var/lib/apt/lists/*_* /tmp/*
+RUN pip install backports.lzma==0.0.2
 RUN git clone --branch 0.7.3 --depth 1 https://github.com/dotcloud/docker-registry.git && \
     cd docker-registry && \
     echo "serviced:"                                                               >> config/config_sample.yml && \
@@ -22,6 +23,7 @@ RUN git clone --branch 0.7.3 --depth 1 https://github.com/dotcloud/docker-regist
     echo "  sqlalchemy_index_database: _env:SQLALCHEMY_INDEX_DATABASE:sqlite:////tmp/registry/docker-registry.db" >> config/config_sample.yml && \
     echo "  loglevel: debug"                                                       >> config/config_sample.yml && \
     pip install /docker-registry/
+RUN pip install elasticsearch-curator
 ADD supervisor.conf /opt/zenoss/etc/supervisor.conf
 ADD consumer.tar.gz /
 ADD opentsdb.tar.gz /
