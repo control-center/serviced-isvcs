@@ -119,7 +119,6 @@ deb: stage_deb
 		-n $(NAME) \
 		-v $(DEB_PKG_VERSION) \
 		-s dir \
-		-d serviced \
 		-t deb \
 		-a noarch \
 		-C $(PKGROOT) \
@@ -140,7 +139,6 @@ rpm: stage_rpm
 		-n $(NAME) \
 		-v $(PKG_VERSION) \
 		-s dir \
-		-d serviced \
 		-t rpm \
 		-a noarch \
 		-C $(PKGROOT) \
