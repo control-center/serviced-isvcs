@@ -16,7 +16,7 @@ HERE               := $(shell pwd)
 UID                := $(shell id -u)
 BUILD_DIR          := build
 REPO               := zenoss/serviced-isvcs
-VERSION            := 18
+VERSION            := 19
 TAG                := v$(VERSION)
 BUILD_REPO         := zenoss/isvcs_build
 BUILD_REPO_TAG     := v1
@@ -84,6 +84,7 @@ clean:
 	rm -rf $(REPO_DIR)
 	cd pkg && make clean
 	docker rmi $(REPO):$(TAG) >/dev/null 2>&1 || exit 0
+	rm -rf .isvcs_export_container_id
 
 mrclean: clean
 	docker rmi $(BUILD_REPO):$(BUILD_REPO_TAG) >/dev/null 2>&1 || exit 0

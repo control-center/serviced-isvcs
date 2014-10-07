@@ -22,6 +22,9 @@ tarball:
 	cd /opt/opentsdb && COMPRESSION=NONE HBASE_HOME=/opt/hbase-$(HBASE_VERSION) JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 ./build.sh
 	cp /tmp/in/hbase-site.xml /opt/hbase-$(HBASE_VERSION)/conf/hbase-site.xml
 	cp /tmp/in/start-opentsdb.sh /opt/opentsdb/build/start-opentsdb.sh && chmod a+x /opt/opentsdb/build/start-opentsdb.sh
+	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < /tmp/in/hbase-daemon.sh.patch
+	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < /tmp/in/start-hbase.sh.patch
 	mkdir -p /opt/zenoss/etc/supervisor
 	cp /tmp/in/opentsdb_supervisor.conf /opt/zenoss/etc/supervisor/opentsdb_supervisor.conf
+	cp /tmp/in/hbase_supervisor.conf /opt/zenoss/etc/supervisor/hbase_supervisor.conf
 	tar czf $(TARGET)/opentsdb.tar.gz /opt
