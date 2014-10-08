@@ -1,0 +1,14 @@
+--- bin/hbase-daemon.sh.orig 2014-10-07 22:24:55.521522129 +0000
++++ bin/hbase-daemon.sh      2014-10-07 22:26:38.061525100 +0000
+@@ -152,9 +152,9 @@ case $startStop in
+     # Add to the command log file vital stats on our environment.
+     echo "`date` Starting $command on `hostname`" >> $loglog
+     echo "`ulimit -a`" >> $loglog 2>&1
+-    nohup nice -n $HBASE_NICENESS "$HBASE_HOME"/bin/hbase \
++    exec "$HBASE_HOME"/bin/hbase \
+         --config "${HBASE_CONF_DIR}" \
+-        $command "$@" $startStop > "$logout" 2>&1 < /dev/null &
++        $command "$@" $startStop 
+     echo $! > $pid
+     sleep 1; head "$logout"
+     ;;
