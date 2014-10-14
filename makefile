@@ -14,6 +14,7 @@
 COMPONENT_NAMES    := es_serviced es_logstash zk opentsdb logstash query consumer celery
 HERE               := $(shell pwd)
 UID                := $(shell id -u)
+GID                := $(shell id -g)
 BUILD_DIR          := build
 REPO               := zenoss/serviced-isvcs
 VERSION            := 19
@@ -51,8 +52,11 @@ export: $(EXPORTED_FILE)
 pkg: docker_isvcs_src = /serviced-isvcs
 pkg: $(EXPORTED_FILE)
 	eval $(ensure_build_image)
-	docker run --rm -v `pwd`:$(docker_isvcs_src) $(BUILD_REPO):$(BUILD_REPO_TAG) \
-		/bin/bash -c "cd $(docker_isvcs_src)/pkg && make MINOR_VERSION=$(VERSION) clean deb rpm"
+	docker run --rm \
+		-v $(HERE):$(docker_isvcs_src) \
+		-w $(docker_isvcs_src)/pkg \
+		$(BUILD_REPO):$(BUILD_REPO_TAG) \
+		bash -c "make MINOR_VERSION=$(VERSION) clean deb rpm; chown -R $(UID):$(GID) ."
 
 install: dest = $(_DESTDIR)$(prefix)/$(REPO)
 install:
@@ -77,7 +81,7 @@ $(BUILD_DIR)/%.tar.gz:
 		-v $(HERE)/$(*):/tmp/in \
 		-v $(HERE)/$(BUILD_DIR):/tmp/out \
 		-w /tmp/in $(BUILD_REPO):$(BUILD_REPO_TAG) \
-		bash -c "make TARGET=/tmp/out; chown -R $(UID):$(UID) /tmp/out/$(notdir $(@))"
+		bash -c "make TARGET=/tmp/out; chown -R $(UID):$(GID) /tmp/out/$(notdir $(@))"
 
 clean:
 	rm -rf $(BUILD_DIR)/*.tar.gz
