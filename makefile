@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+BUILD_NUMBER       ?= $(shell date +%y%m%d)
 COMPONENT_NAMES    := es_serviced es_logstash zk opentsdb logstash query consumer celery
 HERE               := $(shell pwd)
 UID                := $(shell id -u)
@@ -56,7 +57,7 @@ pkg: $(EXPORTED_FILE)
 		-v $(HERE):$(docker_isvcs_src) \
 		-w $(docker_isvcs_src)/pkg \
 		$(BUILD_REPO):$(BUILD_REPO_TAG) \
-		bash -c "make MINOR_VERSION=$(VERSION) clean deb rpm; chown -R $(UID):$(GID) ."
+		bash -c "make MINOR_VERSION=$(VERSION) BUILD_NUMBER=$(BUILD_NUMBER) clean deb rpm; chown -R $(UID):$(GID) ."
 
 install: dest = $(_DESTDIR)$(prefix)/$(REPO)
 install:
