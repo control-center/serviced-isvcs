@@ -10,6 +10,22 @@
     <value>lo</value>
   </property>
   <property>
+    <name>hbase.zookeeper.property.clientPort</name>
+    <value>22181</value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.peerport</name>
+    <value>22888</value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.leaderport</name>
+    <value>23888</value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.quorum</name>
+    <value>localhost</value>
+  </property>
+  <property>
     <name>hbase.regionserver.dns.interface</name>
     <value>lo</value>
   </property>
