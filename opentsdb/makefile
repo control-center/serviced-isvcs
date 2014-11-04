@@ -24,6 +24,7 @@ tarball:
 	cp /tmp/in/start-opentsdb.sh /opt/opentsdb/build/start-opentsdb.sh && chmod a+x /opt/opentsdb/build/start-opentsdb.sh
 	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < /tmp/in/hbase-daemon.sh.patch
 	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < /tmp/in/start-hbase.sh.patch
+	echo "export HBASE_MANAGES_ZK=true" >> /opt/hbase-$(HBASE_VERSION)/conf/hbase-env.sh
 	mkdir -p /opt/zenoss/etc/supervisor
 	cp /tmp/in/opentsdb_supervisor.conf /opt/zenoss/etc/supervisor/opentsdb_supervisor.conf
 	cp /tmp/in/hbase_supervisor.conf /opt/zenoss/etc/supervisor/hbase_supervisor.conf
