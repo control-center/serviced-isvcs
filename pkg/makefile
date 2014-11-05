@@ -121,6 +121,7 @@ deb: stage_deb
 		-s dir \
 		-t deb \
 		-a noarch \
+		-d lxc-docker \
 		-C $(PKGROOT) \
 		-m $(MAINTAINER) \
 		--description "$$DESCRIPTION" \
@@ -141,6 +142,7 @@ rpm: stage_rpm
 		-s dir \
 		-t rpm \
 		-a noarch \
+		-d docker \
 		-C $(PKGROOT) \
 		-m $(MAINTAINER) \
 		--description "$$DESCRIPTION" \
