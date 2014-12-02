@@ -21,4 +21,5 @@ default: tarball
 tarball:
 	wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-$(ES_VERSION).tar.gz | tar -C /opt -xz
 	/opt/elasticsearch-$(ES_VERSION)/bin/plugin -install mobz/elasticsearch-head
+	sed -i -e 's/^.*cluster.name.*$$/cluster.name: elasticsearch_serviced/' /opt/elasticsearch-$(ES_VERSION)/config/elasticsearch.yml
 	tar czf $(TARGET)/es_serviced.tar.gz /opt
