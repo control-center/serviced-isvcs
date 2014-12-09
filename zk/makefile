@@ -12,7 +12,7 @@
 # limitations under the License.
 
 TARGET := $(shell pwd)
-ZK_VERSION := 3.4.5
+ZK_VERSION := 3.4.6
 
 .PHONY: default tarball
 
