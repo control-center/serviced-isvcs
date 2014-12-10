@@ -25,4 +25,5 @@ tarball:
 	chmod a+x /opt/zenoss/bin/central-query.sh
 	ln -s /opt/zenoss/etc/central-query/central-query_supervisor.conf /opt/zenoss/etc/supervisor
 	sed -i 's/\(authEnabled:.*\)true/\1false/' /opt/zenoss/etc/central-query/configuration.yaml
+	sed -i -e '/managedReporter/d' -e '/metricReporters/d' -e '/- {posterType/d' /opt/zenoss/etc/central-query/configuration.yaml
 	tar czf $(TARGET)/query.tar.gz /opt

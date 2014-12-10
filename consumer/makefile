@@ -24,6 +24,7 @@ tarball:
 	@chmod a+x /opt/zenoss/bin/metric-consumer-app.sh
 	@ln -s /opt/zenoss/etc/metric-consumer-app/metric-consumer-app_supervisor.conf /opt/zenoss/etc/supervisor
 	@sed -i 's/\(authEnabled:.*\)true/\1false/' /opt/zenoss/etc/metric-consumer-app/configuration.yaml
+	@sed -i -e '/managedReporter/d' -e '/metricReporters/d' -e '/- {posterType/d' /opt/zenoss/etc/metric-consumer-app/configuration.yaml
 	@echo "httpParameterTags:" >> /opt/zenoss/etc/metric-consumer-app/configuration.yaml
 	@echo "  - controlplane" >> /opt/zenoss/etc/metric-consumer-app/configuration.yaml
 	@echo "tagWhiteList:" >> /opt/zenoss/etc/metric-consumer-app/configuration.yaml
