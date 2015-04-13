@@ -13,6 +13,7 @@
 
 TARGET := $(shell pwd)
 ZK_VERSION := 3.4.5
+EXHIBITOR_POM := https://raw.githubusercontent.com/Netflix/exhibitor/48443003e7aaf321e755dc02504f270572e2d278/exhibitor-standalone/src/main/resources/buildscripts/standalone/maven/pom.xml
 
 .PHONY: default tarball
 
@@ -23,7 +24,7 @@ tarball:
 	cp /opt/zookeeper-$(ZK_VERSION)/conf/zoo_sample.cfg /opt/zookeeper-$(ZK_VERSION)/conf/zoo.cfg
 	echo maxClientCnxns=0 >> /opt/zookeeper-$(ZK_VERSION)/conf/zoo.cfg
 	mkdir /opt/exhibitor && \
-		wget -q -O /opt/exhibitor/pom.xml https://raw.github.com/Netflix/exhibitor/master/exhibitor-standalone/src/main/resources/buildscripts/standalone/maven/pom.xml && \
+		wget -q -O /opt/exhibitor/pom.xml $(EXHIBITOR_POM) && \
 		cd /opt/exhibitor && \
 		mvn assembly:single
 	sed -i 's|start-foreground)|start-foreground)\n /usr/bin/java -jar /opt/exhibitor/target/exhibitor-*-jar-with-dependencies.jar -c file --port 12181 \&|g' /opt/zookeeper-$(ZK_VERSION)/bin/zkServer.sh
