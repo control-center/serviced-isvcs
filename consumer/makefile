@@ -20,7 +20,7 @@ default: tarball
 
 tarball:
 	@mkdir -p /opt/zenoss && mkdir -p /opt/zenoss/log && mkdir -p /opt/zenoss/etc/supervisor && mkdir /opt/zenoss/var
-	@wget -qO- https://s3.amazonaws.com/pip.zenoss/packages/metric-consumer-app-$(CONSUMER_VERSION)-zapp.tar.gz | tar -C /opt/zenoss -xz
+	@wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-$(CONSUMER_VERSION)-zapp.tar.gz | tar -C /opt/zenoss -xz
 	@chmod a+x /opt/zenoss/bin/metric-consumer-app.sh
 	@ln -s /opt/zenoss/etc/metric-consumer-app/metric-consumer-app_supervisor.conf /opt/zenoss/etc/supervisor
 	@/tmp/in/modifyConfigFile.sh /opt/zenoss/etc/metric-consumer-app/configuration.yaml

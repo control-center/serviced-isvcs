@@ -12,7 +12,7 @@
 # limitations under the License.
 
 TARGET := $(shell pwd)
-QUERY_VERSION := 0.1.1
+QUERY_VERSION := 0.1.2
 
 .PHONY: default tarball
 
@@ -20,8 +20,7 @@ default: tarball
 
 tarball:
 	mkdir /opt/zenoss && mkdir /opt/zenoss/log && mkdir -p /opt/zenoss/etc/supervisor && mkdir /opt/zenoss/var
-	wget -qO- http://zenpip.zendev.org/packages/central-query-$(QUERY_VERSION)-zapp.tar.gz | tar -C /opt/zenoss -xz
-
+	wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-$(QUERY_VERSION)-zapp.tar.gz | tar -C /opt/zenoss -xz
 	chmod a+x /opt/zenoss/bin/central-query.sh
 	ln -s /opt/zenoss/etc/central-query/central-query_supervisor.conf /opt/zenoss/etc/supervisor
 	@/tmp/in/modifyConfigFile.sh /opt/zenoss/etc/central-query/configuration.yaml
