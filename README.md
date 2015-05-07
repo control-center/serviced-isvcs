@@ -19,6 +19,8 @@ Manual release process:
 1. Build package: `make pkg`
 1. Test new package
 1. Push new image (replace v? with new version number): `docker push zenoss/serviced-isvcs:v?`
+
+   **HINT:** You can manually run the Jenkins [serviced-isvcs](http://jenkins.zendev.org/view/Control%20Center/job/serviced-isvcs/) job to build and push a new image to dockerhub.
 1. Push changes to serviced-isvcs and serviced repos -- Follow the teams code review/pull request process...
 
 Build the serviced-isvcs image locally:
