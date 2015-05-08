@@ -23,7 +23,7 @@ RUN git clone --branch 0.7.3 --depth 1 https://github.com/dotcloud/docker-regist
     echo "  sqlalchemy_index_database: _env:SQLALCHEMY_INDEX_DATABASE:sqlite:////tmp/registry/docker-registry.db" >> config/config_sample.yml && \
     echo "  loglevel: debug"                                                       >> config/config_sample.yml && \
     pip install /docker-registry/
-RUN pip install elasticsearch-curator
+RUN pip install elasticsearch-curator==3.0.3
 ADD supervisor.conf /opt/zenoss/etc/supervisor.conf
 ADD consumer.tar.gz /
 ADD opentsdb.tar.gz /
