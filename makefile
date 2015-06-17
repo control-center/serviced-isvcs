@@ -12,13 +12,13 @@
 # limitations under the License.
 
 BUILD_NUMBER       ?= $(shell date +%y%m%d)
-COMPONENT_NAMES    := es_serviced es_logstash zk opentsdb logstash query consumer celery
+COMPONENT_NAMES    := registry es_serviced es_logstash zk opentsdb logstash query consumer celery
 HERE               := $(shell pwd)
 UID                := $(shell id -u)
 GID                := $(shell id -g)
 BUILD_DIR          := build
 REPO               := zenoss/serviced-isvcs
-VERSION            := 29
+VERSION            := 30
 TAG                := v$(VERSION)
 BUILD_REPO         := zenoss/isvcs_build
 BUILD_REPO_TAG     := v1
@@ -63,6 +63,9 @@ install: dest = $(_DESTDIR)$(prefix)/$(REPO)
 install:
 	mkdir -p $(dest)
 	cp $(EXPORTED_FILE) $(dest)
+
+build-img:
+	docker build -t $(BUILD_REPO):$(BUILD_REPO_TAG) build_img
 
 $(EXPORTED_FILE):
 	mkdir -p $(REPO_DIR)/$(REPO)
