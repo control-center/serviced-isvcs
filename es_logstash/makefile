@@ -23,4 +23,5 @@ tarball:
 	/opt/elasticsearch-$(ES_VERSION)/bin/plugin -install mobz/elasticsearch-head
 	sed -i -e 's/^.*http.port.*$$/http.port: 9100/' /opt/elasticsearch-$(ES_VERSION)/config/elasticsearch.yml
 	sed -i -e 's/^.*cluster.name.*$$/cluster.name: elasticsearch_logstash/' /opt/elasticsearch-$(ES_VERSION)/config/elasticsearch.yml
+	cat elasticsearch-addendum.yaml >> /opt/elasticsearch-$(ES_VERSION)/config/elasticsearch.yml
 	tar czf $(TARGET)/es_logstash.tar.gz /opt
