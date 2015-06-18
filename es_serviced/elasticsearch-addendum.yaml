@@ -1,0 +1,6 @@
+
+############################ Zenoss Additions #################################
+#
+# Disable dynamic scripting engine to address CVE-2014-3120 (CC-997)
+#
+script.disable_dynamic: true
