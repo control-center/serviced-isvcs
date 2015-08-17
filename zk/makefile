@@ -23,6 +23,8 @@ tarball:
 	wget -qO- http://archive.apache.org/dist/zookeeper/zookeeper-$(ZK_VERSION)/zookeeper-$(ZK_VERSION).tar.gz | tar -C /opt -xz
 	cp /opt/zookeeper-$(ZK_VERSION)/conf/zoo_sample.cfg /opt/zookeeper-$(ZK_VERSION)/conf/zoo.cfg
 	echo maxClientCnxns=0 >> /opt/zookeeper-$(ZK_VERSION)/conf/zoo.cfg
+	echo autopurge.snapRetainCount=3 >> /opt/zookeeper-$(ZK_VERSION)/conf/zoo.cfg
+	echo autopurge.purgeInterval=1 >> /opt/zookeeper-$(ZK_VERSION)/conf/zoo.cfg
 	mkdir /opt/exhibitor && \
 		wget -q -O /opt/exhibitor/pom.xml $(EXHIBITOR_POM) && \
 		cd /opt/exhibitor && \
