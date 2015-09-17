@@ -1,0 +1,12 @@
+
+############################ Zenoss Additions #################################
+#
+# Disable dynamic scripting engine to address CVE-2014-3120 (CC-997)
+#
+script.disable_dynamic: true
+
+#
+# Disable replication for a single-node cluster (CC-1164)
+#
+index.number_of_shards: 1
+index.number_of_replicas: 0

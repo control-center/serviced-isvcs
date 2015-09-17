@@ -1,27 +1,74 @@
-FROM ubuntu:trusty
+FROM zenoss/centos-base:1.0.1
 MAINTAINER Zenoss <dev@zenoss.com>
 
-RUN mkdir /usr/local/serviced/resources -p # this is mounted in to every isvcs container
-RUN apt-get update; \
-    apt-get upgrade -y; \
-    apt-get install -y -q openjdk-7-jre-headless gnuplot-nox supervisor make \
-    redis-server git-core build-essential python-dev \
-    libevent1-dev python-openssl liblzma-dev wget; \
-    apt-get clean; \
-    cd /tmp; \
-    wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py; \
-    python ez_setup.py; \
-    easy_install pip; \
-    rm -rf /var/lib/apt/lists/*_* /tmp/*
-RUN pip install backports.lzma==0.0.2
-RUN pip install elasticsearch-curator==3.0.3
+# Create mount point for isvcs resources
+RUN mkdir -p /usr/local/serviced/resources
+
+# Install Java
+RUN yum -y install java-1.7.0-openjdk-headless \
+    && /sbin/scrub.sh
+
+# Install Celery
+ADD redis.conf /opt/celery/etc/redis.conf
+ADD celery-supervisor.conf /opt/celery/etc/supervisor.conf
+RUN mkdir -p /opt/celery/var/log /opt/celery/var/redis /opt/celery/etc
+RUN ln -s /usr/local/serviced/resources/cpcelery.py /usr/lib/python2.7/site-packages/cpcelery.py
+RUN yum -y install epel-release \
+    && yum install -y redis \
+    && pip install --no-cache-dir celery[redis] pyes python-dateutil socketIO-client \ 
+    && yum -y erase epel-release \
+    && /sbin/scrub.sh
+
+# Install serviced's Elastic
+ENV ES_SERVICED_VERSION 0.90.9
+ADD elasticsearch-addendum.yaml /var/elasticsearch-addendum.yaml
+ADD changeESLogProperties.sh /var/changeESLogProperties.sh
+RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-${ES_SERVICED_VERSION}.tar.gz | tar -C /opt -xz \
+    && /opt/elasticsearch-${ES_SERVICED_VERSION}/bin/plugin -install mobz/elasticsearch-head \
+	&& sed -i -e 's/^.*cluster.name.*$$/cluster.name: elasticsearch_serviced/' /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
+    && cat /var/elasticsearch-addendum.yaml >> /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
+    && /var/changeESLogProperties.sh /opt/elasticsearch-${ES_SERVICED_VERSION}/config/logging.yml \
+    && /sbin/scrub.sh
+
+
+# Install logstash's Elastic
+ENV ES_LOGSTASH_VERSION 1.3.1
+RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-${ES_LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
+    && /opt/elasticsearch-${ES_LOGSTASH_VERSION}/bin/plugin -install mobz/elasticsearch-head \
+	&& sed -i -e 's/^.*cluster.name.*$$/cluster.name: elasticsearch_serviced/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
+    && cat /var/elasticsearch-addendum.yaml >> /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
+    && /var/changeESLogProperties.sh /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/logging.yml \
+    && pip install --no-cache-dir elasticsearch-curator==3.0.3 \
+    && /sbin/scrub.sh
+
+
+# Install metric consumer
+ENV CONSUMER_VERSION 0.1.1
+ADD modify-consumer-config.sh /var/modify-consumer-config.sh
+RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
+RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-${CONSUMER_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
+    && chmod a+x /opt/zenoss/bin/metric-consumer-app.sh \
+    && ln -s /opt/zenoss/etc/metric-consumer-app/metric-consumer-app_supervisor.conf /opt/zenoss/etc/supervisor \
+    && /var/modify-consumer-config.sh /opt/zenoss/etc/metric-consumer-app/configuration.yaml \
+    && /sbin/scrub.sh
+
+# Add supervisord config
 ADD supervisor.conf /opt/zenoss/etc/supervisor.conf
-ADD registry.tar.gz /
-ADD consumer.tar.gz /
-ADD opentsdb.tar.gz /
-ADD query.tar.gz /
-ADD es_serviced.tar.gz /
-ADD es_logstash.tar.gz /
-ADD zk.tar.gz /
-ADD logstash.tar.gz /
-ADD celery.tar.gz /
+
+#
+#RUN apt-get update; \
+#    apt-get upgrade -y; \
+#    apt-get install -y -q openjdk-7-jre-headless gnuplot-nox supervisor make \
+#    redis-server git-core build-essential python-dev \
+#    libevent1-dev python-openssl liblzma-dev wget; \
+#    apt-get clean; \
+#    cd /tmp; \
+#    wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py; \
+#    python ez_setup.py; \
+#    easy_install pip; \
+#    rm -rf /var/lib/apt/lists/*_* /tmp/*
+#ADD registry.tar.gz /
+#ADD consumer.tar.gz /
+#ADD opentsdb.tar.gz /
+#ADD query.tar.gz /
+#ADD logstash.tar.gz /
