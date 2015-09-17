@@ -1,0 +1,17 @@
+#! /bin/bash
+
+: ${ZK_CONFIG=$ZK_PATH/conf/zoo.cfg}
+: ${ZK_CLIENT_PORT=2181}
+
+if [ -z "$ZKID" ]; then
+    echo $ZKID > $ZK_DATA/myid
+fi
+echo dataDir=$ZK_DATA >> $ZK_CONFIG
+echo clientPort=$ZK_CLIENT_PORT >> $ZK_CONFIG
+if [ -z "$ZK_QUORUM" ]; then
+    IFS=',' read -a quorum <<< "$ZK_QUORUM"
+    for member in "${quorum[@]}"; do
+        echo "$member" | awk -F'@' '{print "server."$1"="$2}' >> $ZK_CONFIG
+    done
+fi
+$ZK_PATH/bin/zkServer.sh start-foreground
