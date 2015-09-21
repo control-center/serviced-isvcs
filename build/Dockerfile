@@ -41,6 +41,10 @@ RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/ela
     && pip install --no-cache-dir elasticsearch-curator==3.0.3 \
     && /sbin/scrub.sh
 
+# Install hbase and opentsdb
+ENV OPENTSDB_VERSION 2.1.1
+ENV HBASE_VERSION 0.94.16
+RUN wget -qO- http://zenpip.zendev.org/packages/opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}.tar.gz | tar -C / -xz
 
 # Install metric consumer
 ENV CONSUMER_VERSION 0.1.1
@@ -72,17 +76,3 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/registry-${REGISTRY_V
 
 # Add supervisord config
 ADD supervisor.conf /opt/zenoss/etc/supervisor.conf
-
-#
-#RUN apt-get update; \
-#    apt-get upgrade -y; \
-#    apt-get install -y -q openjdk-7-jre-headless gnuplot-nox supervisor make \
-#    redis-server git-core build-essential python-dev \
-#    libevent1-dev python-openssl liblzma-dev wget; \
-#    apt-get clean; \
-#    cd /tmp; \
-#    wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py; \
-#    python ez_setup.py; \
-#    easy_install pip; \
-#    rm -rf /var/lib/apt/lists/*_* /tmp/*
-#ADD opentsdb.tar.gz /

@@ -3,3 +3,6 @@ images
 pkg/*.rpm
 pkg/*.deb
 zk/build
+zk/exhibitor-standalone-*.jar
+opentsdb/build
+opentsdb/opentsdb-*_hbase-*.tar.gz

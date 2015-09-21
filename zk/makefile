@@ -14,8 +14,8 @@
 TARGET := $(shell pwd)
 BUILD := $(TARGET)/build
 
-EXHIBITOR_VERSION := v1.5.5
-EXHIBITOR_POM :=  https://raw.githubusercontent.com/Netflix/exhibitor/$(EXHIBITOR_VERSION)/exhibitor-standalone/src/main/resources/buildscripts/standalone/maven/pom.xml
+EXHIBITOR_VERSION := 1.5.5
+EXHIBITOR_POM :=  https://raw.githubusercontent.com/Netflix/exhibitor/v$(EXHIBITOR_VERSION)/exhibitor-standalone/src/main/resources/buildscripts/standalone/maven/pom.xml
 
 .PHONY: default clean build
 
@@ -26,6 +26,8 @@ build:
 	wget -q -O $(BUILD)/opt/exhibitor/pom.xml $(EXHIBITOR_POM) && \
 		cd $(BUILD)/opt/exhibitor && \
 		mvn clean package
+	cp $(BUILD)/opt/exhibitor/target/exhibitor-1.0.jar $(TARGET)/exhibitor-standalone-$(EXHIBITOR_VERSION).jar
 
 clean: 
 	rm -rf $(BUILD)
+	rm -f $(TARGET)/exhibitor-standalone-$(EXHIBITOR_VERSION).jar

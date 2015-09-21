@@ -1,4 +1,4 @@
-# Copyright 2014 The Serviced Authors.
+# Copyright 2015 The Serviced Authors.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -13,20 +13,23 @@
 
 TARGET := $(shell pwd)
 BUILD := $(TARGET)/build
-HBASE_VERSION := 0.98.6
+HBASE_VERSION := 0.94.16
 OPENTSDB_VERSION := 2.1.1
 
+HBASE_INSTALL := https://archive.apache.org/dist/hbase/hbase-$(HBASE_VERSION)/hbase-$(HBASE_VERSION).tar.gz
+OPENTSDB_INSTALL := https://github.com/OpenTSDB/opentsdb/archive/$(OPENTSDB_VERSION).tar.gz
+
 .PHONY: default clean build
+
 default: clean build
 
 build:
 	mkdir -p $(BUILD)/opt
-	wget -qO- https://s3.amazonaws.com/pip.zenoss/binary_mirrors/hbase-$(HBASE_VERSION).tar.gz | tar -C $(BUILD)/opt -xz --exclude src --exclude docs --exclude '*-tests.jar'
-	git clone git://github.com/OpenTSDB/opentsdb.git $(BUILD)/opt/opentsdb
-	cd $(BUILD)/opt/opentsdb && git checkout --branch tags/v$(OPENTSDB_VERSION) --depth 1
-	cd $(BUILD)/opt/opentsdb && COMPRESSION=NONE HBASE_HOME=$(BUILD)/opt/hbase-$(HBASE_VERSION) ./build.sh
+	wget -qO- $(HBASE_INSTALL) | tar -C $(BUILD)/opt -xz --exclude src --exclude docs --exclude '*-tests.jar'
+	wget -qO- $(OPENTSDB_INSTALL) | tar -C $(BUILD)/opt -xz
+	cd $(BUILD)/opt/opentsdb-$(OPENTSDB_VERSION) && COMPRESSION=NONE HBASE_HOME=$(BUILD)/opt/hbase-$(HBASE_VERSION) ./build.sh
 	cp hbase-site.xml $(BUILD)/opt/hbase-$(HBASE_VERSION)/conf/hbase-site.xml
-	cp start-opentsdb.sh $(BUILD)/opt/opentsdb/build/start-opentsdb.sh && chmod a+x $(BUILD)/opt/opentsdb/build/start-opentsdb.sh
+	cp start-opentsdb.sh $(BUILD)/opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh && chmod a+x $(BUILD)/opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh
 	cd $(BUILD)/opt/hbase-$(HBASE_VERSION) && patch -p0 < $(TARGET)/hbase-daemon.sh.patch
 	cd $(BUILD)/opt/hbase-$(HBASE_VERSION) && patch -p0 < $(TARGET)/start-hbase.sh.patch
 	./changeHbaseLogProperties.sh $(BUILD)/opt/hbase-$(HBASE_VERSION)/conf/log4j.properties
@@ -34,6 +37,8 @@ build:
 	mkdir -p $(BUILD)/opt/zenoss/etc/supervisor
 	cp opentsdb_supervisor.conf $(BUILD)/opt/zenoss/etc/supervisor/opentsdb_supervisor.conf
 	cp hbase_supervisor.conf $(BUILD)/opt/zenoss/etc/supervisor/hbase_supervisor.conf
+	tar -C $(BUILD) -czf $(TARGET)/opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz opt
 
 clean:
 	rm -rf $(BUILD)
+	rm -f opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz
