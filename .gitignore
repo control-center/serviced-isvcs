@@ -2,4 +2,4 @@ build/*.tar.gz
 images
 pkg/*.rpm
 pkg/*.deb
-
+zk/build
