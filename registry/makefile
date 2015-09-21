@@ -11,20 +11,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TARGET := $(shell pwd)
-DOCKER := /root/go/src/github.com/docker
+TARGET   := $(shell pwd)
+BUILD := $(TARGET)/build
+MYGOPATH := $(BUILD)/gopath
+DOCKER := $(MYGOPATH)/src/github.com/docker
 DISTRO := $(DOCKER)/distribution
+VERSION := 2.0.1
 
-.PHONY: default tarball
+.PHONY: all build clean
+all: clean build
 
-default: tarball
-
-tarball:
+build:
 	mkdir -p $(DOCKER)
 	git clone https://github.com/docker/distribution.git $(DISTRO)
-	cd $(DISTRO) && git checkout tags/v2.0.1
-	cd $(DISTRO) && GOPATH=$(DISTRO)/Godeps/_workspace:$$GOPATH make clean binaries
-	mkdir -p /opt/registry
-	cp $(DISTRO)/bin/registry /opt/registry
-	cp registry-config.yml /opt/registry
-	tar czf $(TARGET)/registry.tar.gz /opt/registry
+	cd $(DISTRO) && git checkout v$(VERSION)
+	cd $(DISTRO) && GOPATH=$(DISTRO)/Godeps/_workspace:$(MYGOPATH) make binaries
+	mkdir -p $(BUILD)/opt/registry
+	cp $(DISTRO)/bin/registry $(BUILD)/opt/registry
+	cp registry-config.yml $(BUILD)/opt/registry
+	tar -C $(BUILD) -czf $(TARGET)/registry-$(VERSION).tar.gz opt/registry
+
+clean:
+	rm -rf $(BUILD)
+	rm -f registry-$(VERSION).tar.gz
