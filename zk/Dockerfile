@@ -22,5 +22,5 @@ ADD start-zookeeper /bin/start-zookeeper
 # Install exhibitor
 RUN mkdir /opt/exhibitor && \
     wget -q -O /opt/exhibitor/exhibitor-standalone-${EXHIBITOR_VERSION}.jar \
-        https://s3.amazonaws.com/pip.zenoss/binary_mirrors/exhibitor-standalone-${EXHIBITOR_VERSION}.jar && \
+        http://zenpip.zendev.org/packages/exhibitor-standalone-${EXHIBITOR_VERSION}.jar && \
     sed -i 's|start-foreground)|start-foreground)\n /usr/bin/java -jar /opt/exhibitor/exhibitor-standalone-${EXHIBITOR_VERSION}.jar -c file --port 12181 \&|g' ${ZK_PATH}/bin/zkServer.sh
