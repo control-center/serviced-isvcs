@@ -52,6 +52,24 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-$
     && /var/modify-consumer-config.sh /opt/zenoss/etc/metric-consumer-app/configuration.yaml \
     && /sbin/scrub.sh
 
+# Install query service
+ENV QUERY_VERSION 0.1.3
+ADD modify-query-config.sh /var/modify-query-config.sh
+RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
+RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
+    && chmod a+x /opt/zenoss/bin/central-query.sh \
+    && ln -s /opt/zenoss/etc/central-query/central-query_supervisor.conf /opt/zenoss/etc/supervisor \
+    && /var/modify-query-config.sh /opt/zenoss/etc/central-query/configuration.yaml \
+    && /sbin/scrub.sh
+
+# Install Logstash
+ENV LOGSTASH_VERSION 1.4.2
+RUN wget -qO- https://download.elasticsearch.org/logstash/logstash/logstash-${LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz
+
+# Install Docker registry
+ENV REGISTRY_VERSION 2.0.1
+RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/registry-${REGISTRY_VERSION}.tar.gz | tar -C / -xz
+
 # Add supervisord config
 ADD supervisor.conf /opt/zenoss/etc/supervisor.conf
 
@@ -67,8 +85,4 @@ ADD supervisor.conf /opt/zenoss/etc/supervisor.conf
 #    python ez_setup.py; \
 #    easy_install pip; \
 #    rm -rf /var/lib/apt/lists/*_* /tmp/*
-#ADD registry.tar.gz /
-#ADD consumer.tar.gz /
 #ADD opentsdb.tar.gz /
-#ADD query.tar.gz /
-#ADD logstash.tar.gz /

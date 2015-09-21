@@ -12,23 +12,28 @@
 # limitations under the License.
 
 TARGET := $(shell pwd)
-HBASE_VERSION := 0.94.16
+BUILD := $(TARGET)/build
+HBASE_VERSION := 0.98.6
+OPENTSDB_VERSION := 2.1.1
 
-default: tarball
+.PHONY: default clean build
+default: clean build
 
+build:
+	mkdir -p $(BUILD)/opt
+	wget -qO- https://s3.amazonaws.com/pip.zenoss/binary_mirrors/hbase-$(HBASE_VERSION).tar.gz | tar -C $(BUILD)/opt -xz --exclude src --exclude docs --exclude '*-tests.jar'
+	git clone git://github.com/OpenTSDB/opentsdb.git $(BUILD)/opt/opentsdb
+	cd $(BUILD)/opt/opentsdb && git checkout --branch tags/v$(OPENTSDB_VERSION) --depth 1
+	cd $(BUILD)/opt/opentsdb && COMPRESSION=NONE HBASE_HOME=$(BUILD)/opt/hbase-$(HBASE_VERSION) ./build.sh
+	cp hbase-site.xml $(BUILD)/opt/hbase-$(HBASE_VERSION)/conf/hbase-site.xml
+	cp start-opentsdb.sh $(BUILD)/opt/opentsdb/build/start-opentsdb.sh && chmod a+x $(BUILD)/opt/opentsdb/build/start-opentsdb.sh
+	cd $(BUILD)/opt/hbase-$(HBASE_VERSION) && patch -p0 < $(TARGET)/hbase-daemon.sh.patch
+	cd $(BUILD)/opt/hbase-$(HBASE_VERSION) && patch -p0 < $(TARGET)/start-hbase.sh.patch
+	./changeHbaseLogProperties.sh $(BUILD)/opt/hbase-$(HBASE_VERSION)/conf/log4j.properties
+	echo "export HBASE_MANAGES_ZK=true" >> $(BUILD)/opt/hbase-$(HBASE_VERSION)/conf/hbase-env.sh
+	mkdir -p $(BUILD)/opt/zenoss/etc/supervisor
+	cp opentsdb_supervisor.conf $(BUILD)/opt/zenoss/etc/supervisor/opentsdb_supervisor.conf
+	cp hbase_supervisor.conf $(BUILD)/opt/zenoss/etc/supervisor/hbase_supervisor.conf
 
-tarball:
-	wget -qO- https://s3.amazonaws.com/pip.zenoss/binary_mirrors/hbase-$(HBASE_VERSION).tar.gz | tar -C /opt -xz
-	git clone git://github.com/OpenTSDB/opentsdb.git /opt/opentsdb
-	cd /opt/opentsdb && git checkout tags/v2.1.0RC1
-	cd /opt/opentsdb && COMPRESSION=NONE HBASE_HOME=/opt/hbase-$(HBASE_VERSION) JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 ./build.sh
-	cp /tmp/in/hbase-site.xml /opt/hbase-$(HBASE_VERSION)/conf/hbase-site.xml
-	cp /tmp/in/start-opentsdb.sh /opt/opentsdb/build/start-opentsdb.sh && chmod a+x /opt/opentsdb/build/start-opentsdb.sh
-	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < /tmp/in/hbase-daemon.sh.patch
-	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < /tmp/in/start-hbase.sh.patch
-	./changeHbaseLogProperties.sh /opt/hbase-$(HBASE_VERSION)/conf/log4j.properties
-	echo "export HBASE_MANAGES_ZK=true" >> /opt/hbase-$(HBASE_VERSION)/conf/hbase-env.sh
-	mkdir -p /opt/zenoss/etc/supervisor
-	cp /tmp/in/opentsdb_supervisor.conf /opt/zenoss/etc/supervisor/opentsdb_supervisor.conf
-	cp /tmp/in/hbase_supervisor.conf /opt/zenoss/etc/supervisor/hbase_supervisor.conf
-	tar czf $(TARGET)/opentsdb.tar.gz /opt
+clean:
+	rm -rf $(BUILD)
