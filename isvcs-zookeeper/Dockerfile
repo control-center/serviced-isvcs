@@ -1,4 +1,4 @@
-FROM zenoss/centos-base:1.0.1
+FROM zenoss/centos-base:1.0.1-java
 MAINTAINER Zenoss <dev@zenoss.com>
 
 ENV ZK_VERSION 3.4.5
@@ -7,10 +7,6 @@ ENV ZK_PATH /opt/zookeeper-${ZK_VERSION}
 ENV ZK_DATA /var/zookeeper
 ENV EXHIBITOR_VERSION 1.5.5
 ENV EXHIBITOR_URL http://central.maven.org/maven2/com/netflix/exhibitor/exhibitor-standalone/${EXHIBITOR_VERSION}/exhibitor-standalone-${EXHIBITOR_VERSION}.jar
-
-# Install java
-RUN yum -y --setopt=tsflags="nodocs" install java-1.7.0-openjdk-headless \
-    && /sbin/scrub.sh
 
 # Install ZooKeeper
 RUN mkdir -p /opt ${ZK_DATA} && \
@@ -22,5 +18,5 @@ ADD start-zookeeper /bin/start-zookeeper
 # Install exhibitor
 RUN mkdir /opt/exhibitor && \
     wget -q -O /opt/exhibitor/exhibitor-standalone-${EXHIBITOR_VERSION}.jar \
-        http://zenpip.zendev.org/packages/exhibitor-standalone-${EXHIBITOR_VERSION}.jar && \
+        https://zenoss-pip.s3.amazonaws.com/packages/exhibitor-standalone-${EXHIBITOR_VERSION}.jar && \
     sed -i 's|start-foreground)|start-foreground)\n /usr/bin/java -jar /opt/exhibitor/exhibitor-standalone-${EXHIBITOR_VERSION}.jar -c file --port 12181 \&|g' ${ZK_PATH}/bin/zkServer.sh

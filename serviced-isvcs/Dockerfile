@@ -1,4 +1,4 @@
-FROM zenoss/centos-base:1.0.1
+FROM zenoss/centos-base:1.0.1-java
 MAINTAINER Zenoss <dev@zenoss.com>
 
 # Create mount point for isvcs resources
@@ -25,7 +25,7 @@ ADD elasticsearch-addendum.yaml /var/elasticsearch-addendum.yaml
 ADD changeESLogProperties.sh /var/changeESLogProperties.sh
 RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-${ES_SERVICED_VERSION}.tar.gz | tar -C /opt -xz \
     && /opt/elasticsearch-${ES_SERVICED_VERSION}/bin/plugin -install mobz/elasticsearch-head \
-	&& sed -i -e 's/^.*cluster.name.*$$/cluster.name: elasticsearch_serviced/' /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
+    && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_serviced/' /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
     && cat /var/elasticsearch-addendum.yaml >> /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
     && /var/changeESLogProperties.sh /opt/elasticsearch-${ES_SERVICED_VERSION}/config/logging.yml \
     && /sbin/scrub.sh
@@ -35,16 +35,12 @@ RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/ela
 ENV ES_LOGSTASH_VERSION 1.3.1
 RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-${ES_LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
     && /opt/elasticsearch-${ES_LOGSTASH_VERSION}/bin/plugin -install mobz/elasticsearch-head \
-	&& sed -i -e 's/^.*cluster.name.*$$/cluster.name: elasticsearch_serviced/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
+    && sed -i -e 's/^.*http.port.*$/http.port: 9100/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
+    && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_logstash/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
     && cat /var/elasticsearch-addendum.yaml >> /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
     && /var/changeESLogProperties.sh /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/logging.yml \
     && pip install --no-cache-dir elasticsearch-curator==3.0.3 \
     && /sbin/scrub.sh
-
-# Install hbase and opentsdb
-ENV OPENTSDB_VERSION 2.1.1
-ENV HBASE_VERSION 0.94.16
-RUN wget -qO- http://zenpip.zendev.org/packages/opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}.tar.gz | tar -C / -xz
 
 # Install metric consumer
 ENV CONSUMER_VERSION 0.1.1
@@ -74,5 +70,15 @@ RUN wget -qO- https://download.elasticsearch.org/logstash/logstash/logstash-${LO
 ENV REGISTRY_VERSION 2.0.1
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/registry-${REGISTRY_VERSION}.tar.gz | tar -C / -xz
 
+# Install hbase and opentsdb
+ENV OPENTSDB_VERSION 2.1.1
+ENV HBASE_VERSION 0.94.16
+RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}.tar.gz | tar -C / -xz
+RUN yum -y install      \
+        gnuplot-minimal \
+        make            \
+    && /sbin/scrub.sh
+
 # Add supervisord config
 ADD supervisor.conf /opt/zenoss/etc/supervisor.conf
+
