@@ -4,3 +4,4 @@ build/opentsdb/build
 build/opentsdb/opentsdb-*_hbase-*.tar.gz
 build/registry/build
 build/registry/*.tar.gz
+isvcs-zookeeper/build

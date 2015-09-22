@@ -36,6 +36,12 @@ zookeeper: ZOOKEEPER-image
 %-image:
 	docker build -t zenoss/$($*_NAME):v$($*_VERSION) $($*_NAME)
 
+.PHONY: push
+push: isvcs zookeeper
+	docker push zenoss/$(ISVCS_NAME):v$(ISVCS_VERSION)
+	docker push zenoss/$(ZOOKEEPER_NAME):v$(ZOOKEEPER_VERSION)
+
+
 $(ISVCS_TARBALL): isvcs
 	docker save zenoss/$(ISVCS_NAME):v$(ISVCS_VERSION) | gzip -9 > $@
 
