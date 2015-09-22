@@ -7,6 +7,6 @@ To build the images:
 
     $ make
 
-To create tarballs of the images:
+To push the images (don't do it until you have all changes to this repository reviewed):
 
-    $ make tarballs
+    $ make push

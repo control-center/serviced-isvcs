@@ -12,20 +12,14 @@
 # limitations under the License.
 #
 
-ISVCS_VERSION     := 33
-ZOOKEEPER_VERSION := 1
-
 ISVCS_NAME := serviced-isvcs
-ZOOKEEPER_NAME := isvcs-zookeeper
+ISVCS_VERSION     := 33
 
-ISVCS_TARBALL := serviced-isvcs-v$(ISVCS_VERSION).tar.gz
-ZOOKEEPER_TARBALL := isvcs-zookeeper-v$(ZOOKEEPER_VERSION).tar.gz
+ZOOKEEPER_NAME := isvcs-zookeeper
+ZOOKEEPER_VERSION := 1
 
 .PHONY: all
 all: isvcs zookeeper
-
-.PHONY: tarballs
-tarballs: $(ISVCS_TARBALL) $(ZOOKEEPER_TARBALL)
 
 .PHONY: isvcs
 isvcs: ISVCS-image
@@ -33,17 +27,11 @@ isvcs: ISVCS-image
 .PHONY: zookeeper
 zookeeper: ZOOKEEPER-image
 
+.PHONY: push
+push: ISVCS-push ZOOKEEPER-push
+
 %-image:
 	docker build -t zenoss/$($*_NAME):v$($*_VERSION) $($*_NAME)
 
-.PHONY: push
-push: isvcs zookeeper
-	docker push zenoss/$(ISVCS_NAME):v$(ISVCS_VERSION)
-	docker push zenoss/$(ZOOKEEPER_NAME):v$(ZOOKEEPER_VERSION)
-
-
-$(ISVCS_TARBALL): isvcs
-	docker save zenoss/$(ISVCS_NAME):v$(ISVCS_VERSION) | gzip -9 > $@
-
-$(ZOOKEEPER_TARBALL): zookeeper
-	docker save zenoss/$(ZOOKEEPER_NAME):v$(ZOOKEEPER_VERSION) | gzip -9 > $@
+%-push: isvcs zookeeper
+	docker push zenoss/$($*_NAME):v$($*_VERSION)
