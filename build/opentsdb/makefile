@@ -11,17 +11,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-HBASE_VERSION := 0.94.16
+HBASE_VERSION    := 0.94.16
 OPENTSDB_VERSION := 2.1.1
-TARBALL := opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz 
-HBASE_INSTALL := https://archive.apache.org/dist/hbase/hbase-$(HBASE_VERSION)/hbase-$(HBASE_VERSION).tar.gz
+TARBALL          := opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz 
+HBASE_INSTALL    := https://archive.apache.org/dist/hbase/hbase-$(HBASE_VERSION)/hbase-$(HBASE_VERSION).tar.gz
 OPENTSDB_INSTALL := https://github.com/OpenTSDB/opentsdb/archive/$(OPENTSDB_VERSION).tar.gz
+TARGET           := /mnt/pwd
 
 .PHONY: default
 default: $(TARBALL)
 
 $(TARBALL): 
-	docker run --rm -v $(PWD):/mnt/pwd -w /mnt/pwd maven:3.3.3-jdk-7 \
+	docker run --rm -v $(PWD):$(TARGET) -w $(TARGET) maven:3.3.3-jdk-7 \
 		/bin/bash -c "apt-get update && apt-get -y install make autoconf patch && make build"
 
 .PHONY: build
@@ -33,16 +34,16 @@ build:
 	ln -s /opt/opentsdb-$(OPENTSDB_VERSION) /opt/opentsdb
 	cd /opt/opentsdb-$(OPENTSDB_VERSION) && COMPRESSION=NONE HBASE_HOME=/opt/hbase-$(HBASE_VERSION) ./build.sh
 	rm -rf /opt/opentsdb-$(OPENTSDB_VERSION)/build/gwt-unitCache /opt/opentsdb-$(OPENTSDB_VERSION)/build/third_party/gwt/gwt-dev-*.jar
-	cp /mnt/pwd/hbase-site.xml /opt/hbase-$(HBASE_VERSION)/conf/hbase-site.xml
-	cp /mnt/pwd/start-opentsdb.sh /opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh && chmod a+x /opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh
-	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < /mnt/pwd/hbase-daemon.sh.patch
-	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < /mnt/pwd/start-hbase.sh.patch
-	/mnt/pwd/changeHbaseLogProperties.sh /opt/hbase-$(HBASE_VERSION)/conf/log4j.properties
+	cp $(TARGET)/hbase-site.xml /opt/hbase-$(HBASE_VERSION)/conf/hbase-site.xml
+	cp $(TARGET)/start-opentsdb.sh /opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh && chmod a+x /opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh
+	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < $(TARGET)/hbase-daemon.sh.patch
+	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < $(TARGET)/start-hbase.sh.patch
+	$(TARGET)/changeHbaseLogProperties.sh /opt/hbase-$(HBASE_VERSION)/conf/log4j.properties
 	echo "export HBASE_MANAGES_ZK=true" >> /opt/hbase-$(HBASE_VERSION)/conf/hbase-env.sh
 	mkdir -p /opt/zenoss/etc/supervisor
-	cp /mnt/pwd/opentsdb_supervisor.conf /opt/zenoss/etc/supervisor/opentsdb_supervisor.conf
-	cp /mnt/pwd/hbase_supervisor.conf /opt/zenoss/etc/supervisor/hbase_supervisor.conf
-	tar -czf /mnt/pwd/opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz /opt
+	cp $(TARGET)/opentsdb_supervisor.conf /opt/zenoss/etc/supervisor/opentsdb_supervisor.conf
+	cp $(TARGET)/hbase_supervisor.conf /opt/zenoss/etc/supervisor/hbase_supervisor.conf
+	tar -czf $(TARGET)/opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz /opt
 
 clean:
 	rm -rf $(TARBALL)
