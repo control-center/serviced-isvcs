@@ -3,6 +3,14 @@ serviced-isvcs
 
 Builds and packages isvcs docker image for use with serviced
 
+Releasing Images for Support (v27.x)
+1. Update and release isvcs constituent parts -- celery, consumer, es_logstash, es_serviced, logstash, opentsdb, query, zk, etc...
+2. Bump version number in `control-center/serviced-isvcs/[updated package]/makefile` where `updated package` is any dependency you updated as part of step 1
+3. Bump serviced version number in `control-center/serviced-isvc/makefile` and `control-center/serviced/isvcs/isvcs.go`
+4. Pull the previous suport image and manually patch it
+5. Test locally
+6. Commit the patched image and push to docker hub
+7. Push changes to this respot and `control-center/serviced`
 
 Manual release process:
 
