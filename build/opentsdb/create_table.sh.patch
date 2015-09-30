@@ -1,9 +1,9 @@
---- create_table.sh.orig	2015-09-30 15:04:50.775679860 +0000
-+++ create_table.sh	2015-09-30 15:06:04.683679752 +0000
+--- create_table.sh.orig	2015-09-30 16:28:09.655672576 +0000
++++ create_table.sh	2015-09-30 16:29:26.419672464 +0000
 @@ -10,6 +10,8 @@
    exit 1
  }
-
+ 
 +# TTL var for 30 days of data retention
 +TTL=2592000
  TSDB_TABLE=${TSDB_TABLE-'tsdb'}
@@ -11,10 +11,10 @@
  TREE_TABLE=${TREE_TABLE-'tsdb-tree'}
 @@ -38,7 +40,7 @@
    {NAME => 'name', COMPRESSION => '$COMPRESSION', BLOOMFILTER => '$BLOOMFILTER'}
-
+ 
  create '$TSDB_TABLE',
 -  {NAME => 't', VERSIONS => 1, COMPRESSION => '$COMPRESSION', BLOOMFILTER => '$BLOOMFILTER'}
 +  {NAME => 't', VERSIONS => 1, COMPRESSION => '$COMPRESSION', BLOOMFILTER => '$BLOOMFILTER', TTL => '$TTL'}
-
+   
  create '$TREE_TABLE',
    {NAME => 't', VERSIONS => 1, COMPRESSION => '$COMPRESSION', BLOOMFILTER => '$BLOOMFILTER'}
