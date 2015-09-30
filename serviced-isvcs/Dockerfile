@@ -73,6 +73,7 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/registry-${REGISTRY_V
 # Install hbase and opentsdb
 ENV OPENTSDB_VERSION 2.1.1
 ENV HBASE_VERSION 0.94.16
+ADD set-opentsdb-table-ttl.sh /var/set-opentsdb-table-ttl.sh
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}.tar.gz | tar -C / -xz
 RUN yum -y install      \
         gnuplot-minimal \
