@@ -13,7 +13,8 @@
 
 HBASE_VERSION    := 0.94.16
 OPENTSDB_VERSION := 2.1.1
-TARBALL          := opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz 
+REVISION := 1
+TARBALL          := opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION)-$(REVISION).tar.gz
 HBASE_INSTALL    := https://archive.apache.org/dist/hbase/hbase-$(HBASE_VERSION)/hbase-$(HBASE_VERSION).tar.gz
 OPENTSDB_INSTALL := https://github.com/OpenTSDB/opentsdb/archive/$(OPENTSDB_VERSION).tar.gz
 TARGET           := /mnt/pwd
@@ -34,6 +35,7 @@ build:
 	ln -s /opt/opentsdb-$(OPENTSDB_VERSION) /opt/opentsdb
 	cd /opt/opentsdb-$(OPENTSDB_VERSION) && COMPRESSION=NONE HBASE_HOME=/opt/hbase-$(HBASE_VERSION) ./build.sh
 	rm -rf /opt/opentsdb-$(OPENTSDB_VERSION)/build/gwt-unitCache /opt/opentsdb-$(OPENTSDB_VERSION)/build/third_party/gwt/gwt-dev-*.jar
+	cd /opt/opentsdb-$(OPENTSDB_VERSION)/src/ && patch -p0 < $(TARGET)/create_table.sh.patch
 	cp $(TARGET)/hbase-site.xml /opt/hbase-$(HBASE_VERSION)/conf/hbase-site.xml
 	cp $(TARGET)/start-opentsdb.sh /opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh && chmod a+x /opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh
 	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < $(TARGET)/hbase-daemon.sh.patch
@@ -43,7 +45,7 @@ build:
 	mkdir -p /opt/zenoss/etc/supervisor
 	cp $(TARGET)/opentsdb_supervisor.conf /opt/zenoss/etc/supervisor/opentsdb_supervisor.conf
 	cp $(TARGET)/hbase_supervisor.conf /opt/zenoss/etc/supervisor/hbase_supervisor.conf
-	tar -czf $(TARGET)/opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz /opt
+	tar -czf $(TARGET)/$(TARBALL) /opt
 
 clean:
 	rm -rf $(TARBALL)

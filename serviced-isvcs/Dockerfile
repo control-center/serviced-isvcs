@@ -53,7 +53,7 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-$
     && /sbin/scrub.sh
 
 # Install query service
-ENV QUERY_VERSION 0.1.4
+ENV QUERY_VERSION 0.1.6
 ADD modify-query-config.sh /var/modify-query-config.sh
 RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
@@ -73,7 +73,8 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/registry-${REGISTRY_V
 # Install hbase and opentsdb
 ENV OPENTSDB_VERSION 2.1.1
 ENV HBASE_VERSION 0.94.16
-RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}.tar.gz | tar -C / -xz
+ADD set-opentsdb-table-ttl.sh /var/set-opentsdb-table-ttl.sh
+RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}-1.tar.gz | tar -C / -xz
 RUN yum -y install      \
         gnuplot-minimal \
         make            \
