@@ -43,7 +43,7 @@ RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/ela
     && /sbin/scrub.sh
 
 # Install metric consumer
-ENV CONSUMER_VERSION 0.1.1
+ENV CONSUMER_VERSION 0.1.2
 ADD modify-consumer-config.sh /var/modify-consumer-config.sh
 RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-${CONSUMER_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \

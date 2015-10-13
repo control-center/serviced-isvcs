@@ -48,3 +48,10 @@ echo "  - controlplane_host_id" >> ${CONFIG_FILE}
 echo "  - controlplane_instance_id" >> ${CONFIG_FILE}
 echo "  - daemon" >> ${CONFIG_FILE}
 echo "  - internal" >> ${CONFIG_FILE}
+echo "" >> ${CONFIG_FILE}
+
+#
+# Add a white list prefix
+echo "tagWhiteListPrefixes:" >> ${CONFIG_FILE}
+echo "  - controlplane_" >> ${CONFIG_FILE}
+
