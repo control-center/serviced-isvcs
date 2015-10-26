@@ -5,6 +5,11 @@
 #
 script.disable_dynamic: true
 
+# 
+# Disable groovy scripting engine to address CVE-2015-1427 (CC-997)
+#
+script.groovy.sandbox.enabled: false
+
 #
 # Disable replication for a single-node cluster (CC-1164)
 #
