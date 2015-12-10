@@ -7,6 +7,7 @@ ENV ZK_PATH /opt/zookeeper-${ZK_VERSION}
 ENV ZK_DATA /var/zookeeper
 ENV EXHIBITOR_VERSION 1.5.5
 ENV EXHIBITOR_URL http://central.maven.org/maven2/com/netflix/exhibitor/exhibitor-standalone/${EXHIBITOR_VERSION}/exhibitor-standalone-${EXHIBITOR_VERSION}.jar
+ENV JVMFLAGS=-Djute.maxbuffer=5242880
 
 # Install ZooKeeper
 RUN mkdir -p /opt ${ZK_DATA} && \
