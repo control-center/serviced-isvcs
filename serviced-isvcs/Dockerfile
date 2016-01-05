@@ -53,7 +53,7 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-$
     && /sbin/scrub.sh
 
 # Install query service
-ENV QUERY_VERSION 0.1.7
+ENV QUERY_VERSION 0.1.8
 ADD modify-query-config.sh /var/modify-query-config.sh
 RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
