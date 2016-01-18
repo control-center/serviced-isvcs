@@ -1,4 +1,4 @@
-FROM zenoss/centos-base:1.0.1-java
+FROM zenoss/centos-base:1.0.2-java
 MAINTAINER Zenoss <dev@zenoss.com>
 
 # Create mount point for isvcs resources
