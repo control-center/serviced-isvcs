@@ -78,6 +78,8 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/opentsdb-${OPENTSDB_V
 RUN yum -y install      \
         gnuplot-minimal \
         make            \
+        snappy          \
+        lzo             \
     && /sbin/scrub.sh
 
 # Add supervisord config
