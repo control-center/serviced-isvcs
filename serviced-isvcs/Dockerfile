@@ -15,7 +15,7 @@ RUN mkdir -p /opt/celery/var/log /opt/celery/var/redis /opt/celery/etc
 RUN ln -s /usr/local/serviced/resources/cpcelery.py /usr/lib/python2.7/site-packages/cpcelery.py
 RUN yum -y install epel-release \
     && yum install -y redis \
-    && pip install --no-cache-dir celery[redis] pyes python-dateutil socketIO-client \ 
+    && pip install --no-cache-dir celery[redis] pyes python-dateutil socketIO-client \
     && yum -y erase epel-release \
     && /sbin/scrub.sh
 
@@ -53,7 +53,7 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-$
     && /sbin/scrub.sh
 
 # Install query service
-ENV QUERY_VERSION 0.1.9
+ENV QUERY_VERSION 0.1.10
 ADD modify-query-config.sh /var/modify-query-config.sh
 RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
