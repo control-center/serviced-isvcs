@@ -13,10 +13,10 @@
 #
 
 ISVCS_NAME := serviced-isvcs
-ISVCS_VERSION     := 40
+ISVCS_VERSION     := 41-dev
 
 ZOOKEEPER_NAME := isvcs-zookeeper
-ZOOKEEPER_VERSION := 4
+ZOOKEEPER_VERSION := 4-dev
 
 .PHONY: all
 all: isvcs zookeeper

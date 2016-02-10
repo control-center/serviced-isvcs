@@ -24,7 +24,9 @@ To release isvcs:
 * Update serviced to use the new isvcs image (look for `IMAGE_TAG` in `isvcs/isvc.go`, and `ZK_IMAGE_TAG` if you're updating zookeeper)
 * `make` serviced, test it, run it, poke at it, taunt it, etc
 * Push the changes up: `git push -u origin release/v40`
-* Find someone who has permission to `docker push` to the zenoss repository and kindly ask them to pull your branch, `make`, then `make push`.
-* After the new isvcs image has been pushed to dockerhub, create a PR in the serviced repo to point to the new isvcs version
+* Find someone who has permission to `docker push` to the zenoss repository and kindly ask them to pull your branch, `make`, then `make push`. Wait till that shiny new image is available in dockerhub
 * Almost done! You're doing super well btw. Thanks a lot.
 * Bump the isvcs version number and add `-dev` suffix. NOTE: if you did not release a new zookeeper, that version number can remain unchanged, but do add the `-dev` suffix back.
+* Commit your version bumpin' changes, and push em up to github.
+* Create a PR to merge your `feature/v40` branch onto `develop`, get it reviewed and merged. NOTE: the version number in `makefile` should be `41-dev` or similar!
+* Finally, create a PR in the serviced repo to point to the new isvcs version (look for `IMAGE_TAG` in `isvcs/isvc.go`)
