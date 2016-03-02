@@ -16,7 +16,7 @@ BUILD := $(TARGET)/build
 MYGOPATH := $(BUILD)/gopath
 DOCKER := $(MYGOPATH)/src/github.com/docker
 DISTRO := $(DOCKER)/distribution
-VERSION := 2.0.1
+VERSION := 2.3.0
 
 .PHONY: all build clean
 all: clean build
