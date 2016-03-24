@@ -63,7 +63,7 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY
     && /sbin/scrub.sh
 
 # Install Logstash
-ENV LOGSTASH_VERSION 1.4.2
+ENV LOGSTASH_VERSION 2.2.2
 RUN wget -qO- https://download.elasticsearch.org/logstash/logstash/logstash-${LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz
 
 # Install Docker registry
