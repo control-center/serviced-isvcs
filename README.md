@@ -10,8 +10,8 @@ necessary `serviced` changes should progress thus:
 1. In the makefile, bump the version number of the images you're updating. If 
 you're only updating `serviced-isvcs`, you will bump `ISVCS_VERSION` such that 
 it is changed from `v(N)-dev` to `v(N+1)-dev`. For example, if the 
-`ISVCS_VERSION` `v43-dev`, change it to `v44-dev`. Follow a similar pattern for 
-`ZOOKEEPER-VERSION`.
+`ISVCS_VERSION` is `v43-dev`, change it to `v44-dev`. Follow a similar pattern 
+for `ZOOKEEPER-VERSION`.
 2. Make your changes.
 3. Build the image. To build both images, simply run `make`. To build only one
 of them, run `make isvcs` or `make zookeeper` as appropriate.
