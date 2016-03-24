@@ -27,11 +27,5 @@ isvcs: ISVCS-image
 .PHONY: zookeeper
 zookeeper: ZOOKEEPER-image
 
-.PHONY: push
-push: ISVCS-push ZOOKEEPER-push
-
 %-image:
 	docker build -t zenoss/$($*_NAME):v$($*_VERSION) $($*_NAME)
-
-%-push: isvcs zookeeper
-	docker push zenoss/$($*_NAME):v$($*_VERSION)
