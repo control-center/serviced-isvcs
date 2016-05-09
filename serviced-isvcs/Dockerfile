@@ -43,7 +43,7 @@ RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/ela
     && /sbin/scrub.sh
 
 # Install metric consumer
-ENV CONSUMER_VERSION 0.1.2
+ENV CONSUMER_VERSION 0.1.3
 ADD modify-consumer-config.sh /var/modify-consumer-config.sh
 RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-${CONSUMER_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
@@ -53,7 +53,7 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-$
     && /sbin/scrub.sh
 
 # Install query service
-ENV QUERY_VERSION 0.1.10
+ENV QUERY_VERSION 0.1.11
 ADD modify-query-config.sh /var/modify-query-config.sh
 RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
@@ -71,10 +71,10 @@ ENV REGISTRY_VERSION 2.3.0
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/registry-${REGISTRY_VERSION}.tar.gz | tar -C / -xz
 
 # Install hbase and opentsdb
-ENV OPENTSDB_VERSION 2.1.1
+ENV OPENTSDB_VERSION 2.2.0
 ENV HBASE_VERSION 0.94.16
 ADD set-opentsdb-table-ttl.sh /var/set-opentsdb-table-ttl.sh
-RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}-1.tar.gz | tar -C / -xz
+RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}-0.tar.gz | tar -C / -xz
 RUN yum -y install      \
         gnuplot-minimal \
         make            \
