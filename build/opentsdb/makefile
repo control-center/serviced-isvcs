@@ -12,17 +12,17 @@
 # limitations under the License.
 
 HBASE_VERSION    := 0.94.16
-OPENTSDB_VERSION := 2.1.1
-REVISION := 1
+OPENTSDB_VERSION := 2.2.0
+REVISION := 0
 TARBALL          := opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION)-$(REVISION).tar.gz
 HBASE_INSTALL    := https://archive.apache.org/dist/hbase/hbase-$(HBASE_VERSION)/hbase-$(HBASE_VERSION).tar.gz
-OPENTSDB_INSTALL := https://github.com/OpenTSDB/opentsdb/archive/$(OPENTSDB_VERSION).tar.gz
+OPENTSDB_INSTALL := https://github.com/OpenTSDB/opentsdb/releases/download/v$(OPENTSDB_VERSION)/opentsdb-$(OPENTSDB_VERSION).tar.gz
 TARGET           := /mnt/pwd
 
 .PHONY: default
 default: $(TARBALL)
 
-$(TARBALL): 
+$(TARBALL):
 	docker run --rm -v $(PWD):$(TARGET) -w $(TARGET) maven:3.3.3-jdk-7 \
 		/bin/bash -c "apt-get update && apt-get -y install make autoconf patch && make build"
 
