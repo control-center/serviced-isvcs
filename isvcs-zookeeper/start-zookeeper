@@ -2,6 +2,12 @@
 
 : ${ZK_CONFIG=$ZK_PATH/conf/zoo.cfg}
 : ${ZK_CLIENT_PORT=2181}
+: ${ZK_RESOURCE=/usr/local/serviced/resources/zookeeper}
+
+# Overwrite the default zookeeper config if available
+if [ -e "$ZK_RESOURCE/zoo.cfg" ]; then
+    cp $ZK_RESOURCE/zoo.cfg $ZK_CONFIG
+fi
 
 if [ ! -z "$ZKID" ]; then
     echo $ZKID > $ZK_DATA/myid

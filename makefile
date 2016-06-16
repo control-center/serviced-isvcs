@@ -16,7 +16,7 @@ ISVCS_NAME := serviced-isvcs
 ISVCS_VERSION     := 44-dev
 
 ZOOKEEPER_NAME := isvcs-zookeeper
-ZOOKEEPER_VERSION := 4-dev
+ZOOKEEPER_VERSION := 5-dev
 
 .PHONY: all
 all: isvcs zookeeper
