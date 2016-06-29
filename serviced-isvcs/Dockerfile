@@ -21,25 +21,27 @@ RUN yum -y install epel-release \
 
 # Install serviced's Elastic
 ENV ES_SERVICED_VERSION 0.90.9
-ADD elasticsearch-addendum.yaml /var/elasticsearch-addendum.yaml
+ADD es-serviced-addendum.yaml /var/es-serviced-addendum.yaml
 ADD changeESLogProperties.sh /var/changeESLogProperties.sh
 RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-${ES_SERVICED_VERSION}.tar.gz | tar -C /opt -xz \
     && /opt/elasticsearch-${ES_SERVICED_VERSION}/bin/plugin -install mobz/elasticsearch-head \
     && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_serviced/' /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
-    && cat /var/elasticsearch-addendum.yaml >> /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
+    && cat /var/es-serviced-addendum.yaml >> /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
     && /var/changeESLogProperties.sh /opt/elasticsearch-${ES_SERVICED_VERSION}/config/logging.yml \
     && /sbin/scrub.sh
 
 
 # Install logstash's Elastic
-ENV ES_LOGSTASH_VERSION 1.3.1
+ENV ES_LOGSTASH_VERSION 2.3.3
+ADD es-logstash-addendum.yaml /var/es-logstash-addendum.yaml
 RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-${ES_LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
-    && /opt/elasticsearch-${ES_LOGSTASH_VERSION}/bin/plugin -install mobz/elasticsearch-head \
+    && /opt/elasticsearch-${ES_LOGSTASH_VERSION}/bin/plugin install mobz/elasticsearch-head \
     && sed -i -e 's/^.*http.port.*$/http.port: 9100/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
     && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_logstash/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
-    && cat /var/elasticsearch-addendum.yaml >> /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
+    && sed -i -e 's/^.*network.host.*$/network.host: 0.0.0.0/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
+    && cat /var/es-logstash-addendum.yaml >> /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
     && /var/changeESLogProperties.sh /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/logging.yml \
-    && pip install --no-cache-dir elasticsearch-curator==3.0.3 \
+    && pip install --no-cache-dir elasticsearch-curator==3.5.0 \
     && /sbin/scrub.sh
 
 # Install metric consumer
@@ -63,7 +65,7 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY
     && /sbin/scrub.sh
 
 # Install Logstash
-ENV LOGSTASH_VERSION 2.2.2
+ENV LOGSTASH_VERSION 2.3.3
 RUN wget -qO- https://download.elasticsearch.org/logstash/logstash/logstash-${LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz
 
 # Install Docker registry
