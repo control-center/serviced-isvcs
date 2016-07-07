@@ -1,31 +1,28 @@
-# Copyright 2015 The Serviced Authors.
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+IMAGENAME  = serviced-isvcs
+VERSION   ?= v44-dev
+TAG = zenoss/$(IMAGENAME):$(VERSION)
 
-ISVCS_NAME := serviced-isvcs
-ISVCS_VERSION     := 44-dev
+.PHONY: build build-base build-java push clean
 
-ZOOKEEPER_NAME := isvcs-zookeeper
-ZOOKEEPER_VERSION := 5-dev
+build:
+	@echo Building Serviced ISVCS image
+	docker build -t $(TAG) .
 
-.PHONY: all
-all: isvcs zookeeper
+push:
+	docker push $(TAG)
 
-.PHONY: isvcs
-isvcs: ISVCS-image
+# Don't generate an error if the image does not exist
+clean:
+	-docker rmi $(TAG)
 
-.PHONY: zookeeper
-zookeeper: ZOOKEEPER-image
+# Generate a make failure if the VERSION string contains "-<some letters>"
+verifyVersion:
+	@./verifyVersion.sh $(VERSION)
 
-%-image:
-	docker build -t zenoss/$($*_NAME):v$($*_VERSION) $($*_NAME)
+# Generate a make failure if the image(s) already exist
+verifyImage:
+	@./verifyImage.sh zenoss/$(IMAGENAME) $(VERSION)
+
+# Do not release if the image version is invalid
+# This target is intended for use when trying to build/publish images from the master branch
+release: verifyVersion verifyImage clean build push
