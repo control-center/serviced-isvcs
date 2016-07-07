@@ -66,7 +66,8 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY
 
 # Install Logstash
 ENV LOGSTASH_VERSION 2.3.3
-RUN wget -qO- https://download.elasticsearch.org/logstash/logstash/logstash-${LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz
+RUN wget -qO- https://download.elasticsearch.org/logstash/logstash/logstash-${LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
+    && /opt/logstash-${LOGSTASH_VERSION}/bin/logstash-plugin install logstash-input-beats
 
 # Install Docker registry
 ENV REGISTRY_VERSION 2.3.0
