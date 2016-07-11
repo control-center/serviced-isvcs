@@ -74,7 +74,7 @@ ADD registry-${REGISTRY_VERSION}.tar.gz  /
 ENV OPENTSDB_VERSION %OPENTSDB_VERSION%
 ENV HBASE_VERSION %HBASE_VERSION%
 ADD set-opentsdb-table-ttl.sh /var/set-opentsdb-table-ttl.sh
-RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}-0.tar.gz | tar -C / -xz
+ADD opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}.tar.gz /
 RUN yum -y install      \
         gnuplot-minimal \
         make            \
