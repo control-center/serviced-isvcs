@@ -14,7 +14,22 @@
 
 VERSION := v44-dev
 
-.PHONY: build
+REGISTRY_VERSION := 2.3.0
+REGISTRY_TARBALL := build/registry/registry-$(REGISTRY_VERSION).tar.gz
 
-build:
+$(REGISTRY_TARBALL):
+	cd build/registry;make VERSION=$(REGISTRY_VERSION)
+
+build-registry: $(REGISTRY_TARBALL)
+
+clean-registry:
+	cd build/registry;make VERSION=$(REGISTRY_VERSION) clean
+
+.PHONY: build
+build: build-registry
+	cp $(REGISTRY_TARBALL) ./
+	sed -e 's/%REGISTRY_VERSION%/$(REGISTRY_VERSION)/g' Dockerfile.in > ./Dockerfile
 	docker build -t zenoss/serviced-isvcs:$(VERSION) .
+
+clean: clean-registry
+	rm -f ./Dockerfile

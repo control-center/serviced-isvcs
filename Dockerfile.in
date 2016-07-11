@@ -67,8 +67,8 @@ ENV LOGSTASH_VERSION 2.2.2
 RUN wget -qO- https://download.elasticsearch.org/logstash/logstash/logstash-${LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz
 
 # Install Docker registry
-ENV REGISTRY_VERSION 2.3.0
-RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/registry-${REGISTRY_VERSION}.tar.gz | tar -C / -xz
+ENV REGISTRY_VERSION %REGISTRY_VERSION%
+ADD registry-${REGISTRY_VERSION}.tar.gz  /
 
 # Install hbase and opentsdb
 ENV OPENTSDB_VERSION 2.2.0
