@@ -12,7 +12,9 @@
 # limitations under the License.
 #
 
-VERSION := v44-dev
+IMAGENAME := serviced-isvcs
+VERSION   := v44-dev
+TAG       := zenoss/$(IMAGENAME):$(VERSION)
 
 REGISTRY_VERSION := 2.3.0
 REGISTRY_TARBALL := build/registry/registry-$(REGISTRY_VERSION).tar.gz
@@ -44,8 +46,25 @@ build: build-registry build-opentsdb-hbase
 	cp $(REGISTRY_TARBALL) ./
 	cp $(OPENTSDB_HBASE_TARBALL) ./
 	sed -e 's/%REGISTRY_VERSION%/$(REGISTRY_VERSION)/g; s/%OPENTSDB_VERSION%/$(OPENTSDB_VERSION)/g; s/%HBASE_VERSION%/$(HBASE_VERSION)/g' Dockerfile.in > ./Dockerfile
-	docker build -t zenoss/serviced-isvcs:$(VERSION) .
+	docker build -t $(TAG) .
 
+# Don't generate an error if the image does not exist
 clean: clean-registry clean-opentsdb-hbase
 	rm -f ./Dockerfile
 	rm -f ./*.tar.gz
+	-docker rmi $(TAG)
+
+push:
+	docker push $(TAG)
+
+# Generate a make failure if the VERSION string contains "-<some letters>"
+verifyVersion:
+	@./verifyVersion.sh $(VERSION)
+
+# Generate a make failure if the image(s) already exist
+verifyImage:
+	@./verifyImage.sh zenoss/$(IMAGENAME) $(VERSION)
+
+# Do not release if the image version is invalid
+# This target is intended for use when trying to build/publish images from the master branch
+release: verifyVersion verifyImage clean build push
