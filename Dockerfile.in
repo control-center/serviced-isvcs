@@ -67,14 +67,14 @@ ENV LOGSTASH_VERSION 2.2.2
 RUN wget -qO- https://download.elasticsearch.org/logstash/logstash/logstash-${LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz
 
 # Install Docker registry
-ENV REGISTRY_VERSION 2.3.0
-RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/registry-${REGISTRY_VERSION}.tar.gz | tar -C / -xz
+ENV REGISTRY_VERSION %REGISTRY_VERSION%
+ADD registry-${REGISTRY_VERSION}.tar.gz  /
 
 # Install hbase and opentsdb
-ENV OPENTSDB_VERSION 2.2.0
-ENV HBASE_VERSION 0.94.16
+ENV OPENTSDB_VERSION %OPENTSDB_VERSION%
+ENV HBASE_VERSION %HBASE_VERSION%
 ADD set-opentsdb-table-ttl.sh /var/set-opentsdb-table-ttl.sh
-RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}-0.tar.gz | tar -C / -xz
+ADD opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}.tar.gz /
 RUN yum -y install      \
         gnuplot-minimal \
         make            \

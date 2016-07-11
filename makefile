@@ -12,20 +12,59 @@
 # limitations under the License.
 #
 
-ISVCS_NAME := serviced-isvcs
-ISVCS_VERSION     := 44-dev
+IMAGENAME := serviced-isvcs
+VERSION   := v44-dev
+TAG       := zenoss/$(IMAGENAME):$(VERSION)
 
-ZOOKEEPER_NAME := isvcs-zookeeper
-ZOOKEEPER_VERSION := 5-dev
+REGISTRY_VERSION := 2.3.0
+REGISTRY_TARBALL := build/registry/registry-$(REGISTRY_VERSION).tar.gz
 
-.PHONY: all
-all: isvcs zookeeper
+OPENTSDB_VERSION := 2.2.0
+HBASE_VERSION := 0.94.16
+OPENTSDB_HBASE_TARBALL := build/opentsdb/opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz
 
-.PHONY: isvcs
-isvcs: ISVCS-image
+$(REGISTRY_TARBALL):
+	cd build/registry;make VERSION=$(REGISTRY_VERSION)
 
-.PHONY: zookeeper
-zookeeper: ZOOKEEPER-image
+build-registry: $(REGISTRY_TARBALL)
 
-%-image:
-	docker build -t zenoss/$($*_NAME):v$($*_VERSION) $($*_NAME)
+clean-registry:
+	cd build/registry;make VERSION=$(REGISTRY_VERSION) clean
+
+$(OPENTSDB_HBASE_TARBALL):
+	cd build/opentsdb;make OPENTSDB_VERSION=$(OPENTSDB_VERSION) HBASE_VERSION=$(HBASE_VERSION)
+
+build-opentsdb-hbase: $(OPENTSDB_HBASE_TARBALL)
+
+clean-opentsdb-hbase:
+	cd build/opentsdb;make OPENTSDB_VERSION=$(OPENTSDB_VERSION) HBASE_VERSION=$(HBASE_VERSION) clean
+
+.PHONY: default build clean
+default: build
+
+build: build-registry build-opentsdb-hbase
+	cp $(REGISTRY_TARBALL) ./
+	cp $(OPENTSDB_HBASE_TARBALL) ./
+	sed -e 's/%REGISTRY_VERSION%/$(REGISTRY_VERSION)/g; s/%OPENTSDB_VERSION%/$(OPENTSDB_VERSION)/g; s/%HBASE_VERSION%/$(HBASE_VERSION)/g' Dockerfile.in > ./Dockerfile
+	docker build -t $(TAG) .
+
+# Don't generate an error if the image does not exist
+clean: clean-registry clean-opentsdb-hbase
+	rm -f ./Dockerfile
+	rm -f ./*.tar.gz
+	-docker rmi $(TAG)
+
+push:
+	docker push $(TAG)
+
+# Generate a make failure if the VERSION string contains "-<some letters>"
+verifyVersion:
+	@./verifyVersion.sh $(VERSION)
+
+# Generate a make failure if the image(s) already exist
+verifyImage:
+	@./verifyImage.sh zenoss/$(IMAGENAME) $(VERSION)
+
+# Do not release if the image version is invalid
+# This target is intended for use when trying to build/publish images from the master branch
+release: verifyVersion verifyImage clean build push
