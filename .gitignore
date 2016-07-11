@@ -1,5 +1,3 @@
-build/exhibitor/build
-build/exhibitor/exhibitor-standalone-*.jar
 build/opentsdb/build
 build/opentsdb/opentsdb-*_hbase-*.tar.gz
 build/registry/build
