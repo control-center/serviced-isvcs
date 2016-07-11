@@ -12,14 +12,9 @@
 # limitations under the License.
 #
 
-ISVCS_NAME := serviced-isvcs
-ISVCS_VERSION     := 44-dev
+VERSION := v44-dev
 
-.PHONY: all
-all: isvcs
+.PHONY: build
 
-.PHONY: isvcs
-isvcs: ISVCS-image
-
-%-image:
-	docker build -t zenoss/$($*_NAME):v$($*_VERSION) $($*_NAME)
+build:
+	docker build -t zenoss/serviced-isvcs:$(VERSION) .
