@@ -11,8 +11,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TARGET   := $(shell pwd)
-BUILD := $(TARGET)/build
+TARGET := $(shell pwd)
+
+#
+# Build in a temp directory so that we don't care if the source dir path contains a space
+#  (which happens on Jenkins if we put the job in a Folder whose name contains spaces).
+#
+TEMP_DIR   := $(shell mktemp -d)
+BUILD := $(TEMP_DIR)/build
 MYGOPATH := $(BUILD)/gopath
 DOCKER := $(MYGOPATH)/src/github.com/docker
 DISTRO := $(DOCKER)/distribution
@@ -28,7 +34,7 @@ build:
 	mkdir -p $(BUILD)/opt/registry
 	cp $(DISTRO)/bin/registry $(BUILD)/opt/registry
 	cp registry-config.yml $(BUILD)/opt/registry
-	tar -C $(BUILD) -czf $(TARGET)/registry-$(VERSION).tar.gz opt/registry
+	tar -C $(BUILD) -czf "$(TARGET)/registry-$(VERSION).tar.gz" opt/registry
 
 clean:
 	rm -rf $(BUILD)
