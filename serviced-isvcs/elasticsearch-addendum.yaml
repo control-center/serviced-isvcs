@@ -18,3 +18,6 @@ index.number_of_replicas: 0
 
 # Disable multicast
 discovery.zen.ping.multicast.enabled: false
+
+# Disable network discovery
+node.local: true
