@@ -95,5 +95,6 @@ ENV KIBANA_VERSION 4.5.2
 RUN wget -qO- https://download.elastic.co/kibana/kibana/kibana-${KIBANA_VERSION}-linux-x64.tar.gz | tar -C /opt -xz \
     && mv /opt/kibana-${KIBANA_VERSION}-linux-x64 /opt/kibana-${KIBANA_VERSION} \
     && ln -s /opt/kibana-${KIBANA_VERSION} /opt/kibana \
-    && sed -i -e 's@^.*elasticsearch.url.*$@elasticsearch.url: "http://elasticsearch:9100"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml\
-    && sed -i -e 's@^.*server.basePath.*$@server.basePath: "/api/controlplane/kibana"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml\
+    && sed -i -e 's@^.*elasticsearch.url.*$@elasticsearch.url: "http://elasticsearch:9100"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml \
+    && sed -i -e 's@^.*server.basePath.*$@server.basePath: "/api/controlplane/kibana"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml \
+    && sed -i -e 's@^.*kibana.index:.*$@kibana.index: "kibana-int"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml
