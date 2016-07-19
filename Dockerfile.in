@@ -1,12 +1,10 @@
-FROM zenoss/centos-base:1.0.2-java
+FROM zenoss/centos-base:1.1.0-java
 MAINTAINER Zenoss <dev@zenoss.com>
 
 # Create mount point for isvcs resources
 RUN mkdir -p /usr/local/serviced/resources
 
-# Install Java
-RUN yum -y install java-1.7.0-openjdk-headless \
-    && /sbin/scrub.sh
+RUN echo "mount point created for resources"
 
 # Install Celery
 ADD redis.conf /opt/celery/etc/redis.conf
@@ -18,6 +16,8 @@ RUN yum -y install epel-release \
     && pip install --no-cache-dir celery[redis] pyes python-dateutil socketIO-client \
     && yum -y erase epel-release \
     && /sbin/scrub.sh
+
+RUN echo "Done with Celery install."
 
 # Install serviced's Elastic
 ENV ES_SERVICED_VERSION 0.90.9
