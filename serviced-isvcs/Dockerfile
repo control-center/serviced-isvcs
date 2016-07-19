@@ -93,5 +93,4 @@ ENV KIBANA_VERSION 4.5.2
 RUN wget -qO- https://download.elastic.co/kibana/kibana/kibana-${KIBANA_VERSION}-linux-x64.tar.gz | tar -C /opt -xz \
     && mv /opt/kibana-${KIBANA_VERSION}-linux-x64 /opt/kibana-${KIBANA_VERSION} \
     && sed -i -e 's@^.*elasticsearch.url.*$@elasticsearch.url: "http://elasticsearch:9100"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml\
-    && sed -i -e 's@^.*server.ssl.key.*$@server.ssl.key: /usr/local/serviced/resources/logstash/filebeat.key@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml \
-    && sed -i -e 's@^.*server.ssl.cert.*$@server.ssl.cert: /usr/local/serviced/resources/logstash/filebeat.crt@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml
+    && sed -i -e 's@^.*server.basePath.*$@server.basePath: "/api/controlplane/kibana"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml\
