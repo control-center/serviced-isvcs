@@ -35,6 +35,7 @@ RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/ela
 ENV ES_LOGSTASH_VERSION 2.3.3
 ADD es-logstash-addendum.yaml /var/es-logstash-addendum.yaml
 RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-${ES_LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
+    && ln -s /opt/elasticsearch-${ES_LOGSTASH_VERSION} /opt/elasticsearch-logstash \
     && /opt/elasticsearch-${ES_LOGSTASH_VERSION}/bin/plugin install mobz/elasticsearch-head \
     && sed -i -e 's/^.*http.port.*$/http.port: 9100/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
     && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_logstash/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
@@ -67,6 +68,7 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY
 # Install Logstash
 ENV LOGSTASH_VERSION 2.3.3
 RUN wget -qO- https://download.elasticsearch.org/logstash/logstash/logstash-${LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
+    && ln -s /opt/logstash-${LOGSTASH_VERSION} /opt/logstash \
     && /opt/logstash-${LOGSTASH_VERSION}/bin/logstash-plugin install logstash-input-beats
 
 # Install Docker registry
@@ -92,5 +94,6 @@ ADD supervisor.conf /opt/zenoss/etc/supervisor.conf
 ENV KIBANA_VERSION 4.5.2
 RUN wget -qO- https://download.elastic.co/kibana/kibana/kibana-${KIBANA_VERSION}-linux-x64.tar.gz | tar -C /opt -xz \
     && mv /opt/kibana-${KIBANA_VERSION}-linux-x64 /opt/kibana-${KIBANA_VERSION} \
+    && ln -s /opt/kibana-${KIBANA_VERSION} /opt/kibana \
     && sed -i -e 's@^.*elasticsearch.url.*$@elasticsearch.url: "http://elasticsearch:9100"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml\
     && sed -i -e 's@^.*server.basePath.*$@server.basePath: "/api/controlplane/kibana"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml\
