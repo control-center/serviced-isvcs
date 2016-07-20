@@ -24,6 +24,7 @@ ENV ES_SERVICED_VERSION 0.90.9
 ADD es-serviced-addendum.yaml /var/es-serviced-addendum.yaml
 ADD changeESLogProperties.sh /var/changeESLogProperties.sh
 RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-${ES_SERVICED_VERSION}.tar.gz | tar -C /opt -xz \
+    && ln -s /opt/elasticsearch-${ES_SERVICED_VERSION} /opt/elasticsearch-serviced \
     && /opt/elasticsearch-${ES_SERVICED_VERSION}/bin/plugin -install mobz/elasticsearch-head \
     && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_serviced/' /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
     && cat /var/es-serviced-addendum.yaml >> /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
