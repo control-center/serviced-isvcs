@@ -5,7 +5,7 @@ used by [Control Center](https://github.com/control-center/serviced).
 # Building
 To buid a dev image for testing locally, use
   * `git checkout develop`
-  * `git pull origin devlop`
+  * `git pull origin develop`
   * `make clean build`
 
 The result should be a `vN-dev` image in your local docker repo (e.g. `v44-dev`).   If you need to make changes, create
@@ -55,7 +55,7 @@ The version convention is for the `develop` branch to have the next release vers
 
 7. You will be on the `develop` branch again. While on `develop` branch, edit the the `VERSION` variable in the makefile to
 be the next development version. For example, if you just released version v44, then change the `VERSION` variable to
-`1.0.4-dev`.
+`v45-dev`.
 
 8. Check in `develop` version bump and push.
   * `git commit...`
