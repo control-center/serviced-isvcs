@@ -1,4 +1,4 @@
-FROM zenoss/centos-base:1.1.0-java
+FROM zenoss/centos-base:1.1.1-java
 MAINTAINER Zenoss <dev@zenoss.com>
 
 # Create mount point for isvcs resources
@@ -43,7 +43,7 @@ RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/ela
     && /sbin/scrub.sh
 
 # Install metric consumer
-ENV CONSUMER_VERSION 0.1.4
+ENV CONSUMER_VERSION 0.1.5
 ADD modify-consumer-config.sh /var/modify-consumer-config.sh
 RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-${CONSUMER_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
@@ -53,7 +53,7 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-$
     && /sbin/scrub.sh
 
 # Install query service
-ENV QUERY_VERSION 0.1.12
+ENV QUERY_VERSION 0.1.13
 ADD modify-query-config.sh /var/modify-query-config.sh
 RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
