@@ -13,7 +13,7 @@
 #
 
 IMAGENAME := serviced-isvcs
-VERSION   := v47
+VERSION   := v48-dev
 TAG       := zenoss/$(IMAGENAME):$(VERSION)
 
 REGISTRY_VERSION := 2.3.0
