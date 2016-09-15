@@ -4,17 +4,6 @@ MAINTAINER Zenoss <dev@zenoss.com>
 # Create mount point for isvcs resources
 RUN mkdir -p /usr/local/serviced/resources
 
-# Install Celery
-ADD redis.conf /opt/celery/etc/redis.conf
-ADD celery-supervisor.conf /opt/celery/etc/supervisor.conf
-RUN mkdir -p /opt/celery/var/log /opt/celery/var/redis /opt/celery/etc
-RUN ln -s /usr/local/serviced/resources/cpcelery.py /usr/lib/python2.7/site-packages/cpcelery.py
-RUN yum -y install epel-release \
-    && yum install -y redis \
-    && pip install --no-cache-dir celery[redis] pyes python-dateutil socketIO-client \
-    && yum -y erase epel-release \
-    && /sbin/scrub.sh
-
 # Install serviced's Elastic
 ENV ES_SERVICED_VERSION 0.90.9
 ADD es-serviced-addendum.yaml /var/es-serviced-addendum.yaml
