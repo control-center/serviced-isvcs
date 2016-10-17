@@ -19,7 +19,7 @@ TARBALL := elasticsearch-logstash-$(VERSION).tar.gz
 all: clean build
 
 build:
-	tar -czf $(TARGET)/$(TARBALL) nodes
+	tar -czf "$(TARGET)/$(TARBALL)" nodes
 
 clean:
 	rm -f elasticsearch-logstash-$(VERSION).tar.gz
