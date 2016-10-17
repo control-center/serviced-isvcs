@@ -18,8 +18,9 @@ RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/ela
 
 
 # Install logstash's Elastic
-ENV ES_LOGSTASH_VERSION 2.3.3
+ENV ES_LOGSTASH_VERSION %ES_LOGSTASH_VERSION%
 ADD es-logstash-addendum.yaml /var/es-logstash-addendum.yaml
+COPY elasticsearch-logstash-${ES_LOGSTASH_VERSION}.tar.gz /
 RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-${ES_LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
     && ln -s /opt/elasticsearch-${ES_LOGSTASH_VERSION} /opt/elasticsearch-logstash \
     && /opt/elasticsearch-${ES_LOGSTASH_VERSION}/bin/plugin install mobz/elasticsearch-head \
@@ -30,6 +31,7 @@ RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/ela
     && /var/changeESLogProperties.sh /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/logging.yml \
     && pip install --no-cache-dir elasticsearch-curator==3.5.0 \
     && /sbin/scrub.sh
+ADD es-logstash-start.sh /opt/elasticsearch-${ES_LOGSTASH_VERSION}/bin
 
 # Install metric consumer
 ENV CONSUMER_VERSION 0.1.5
