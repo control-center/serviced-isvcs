@@ -7,7 +7,7 @@ export HBASE_HOME=/opt/hbase
 export JAVA_HOME=/usr/lib/jvm/jre
 
 # Overwrite the default open tsdb config if available
-:${OPENTSDB_RESOURCE=/usr/local/serviced/resources/opentsdb}
+true ${OPENTSDB_RESOURCE:=/usr/local/serviced/resources/opentsdb}
 if [ -e "$OPENTSDB_RESOURCE/opentsdb.conf" ]; then
     cp $OPENTSDB_RESOURCE/opentsdb.conf /opt/opentsdb/opentsdb.conf
 fi
