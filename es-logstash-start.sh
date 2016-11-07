@@ -11,4 +11,5 @@ if [ ! -d $ES_DATA/$CLUSTER_NAME ]; then
     tar -xzf /elasticsearch-logstash-$ES_LOGSTASH_VERSION.tar.gz -C $ES_DATA/$CLUSTER_NAME
 fi
 
-/opt/elasticsearch-logstash/bin/elasticsearch -Des.insecure.allow.root=true -Des.node.name=$NODE_NAME -Des.cluster.name=$CLUSTER_NAME
+exec /opt/elasticsearch-logstash/bin/elasticsearch -Des.insecure.allow.root=true -Des.node.name=$NODE_NAME -Des.cluster.name=$CLUSTER_NAME
+
