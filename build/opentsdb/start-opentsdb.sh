@@ -6,8 +6,14 @@ export COMPRESSION=NONE
 export HBASE_HOME=/opt/hbase
 export JAVA_HOME=/usr/lib/jvm/jre
 
-# Overwrite the default open tsdb config if available
 true ${OPENTSDB_RESOURCE:=/usr/local/serviced/resources/opentsdb}
+
+# Overwrite the default metric consumer config if available
+if [ -e "$OPENTSDB_RESOURCE/metric-consumer-app/configuration.yaml" ]; then
+    cp $OPENTSDB_RESOURCE/metric-consumer-app/configuration.yaml /opt/zenoss/etc/metric-consumer-app/configuration.yaml
+fi
+
+# Overwrite the default open tsdb config if available
 if [ -e "$OPENTSDB_RESOURCE/opentsdb.conf" ]; then
     cp $OPENTSDB_RESOURCE/opentsdb.conf /opt/opentsdb/opentsdb.conf
 fi
