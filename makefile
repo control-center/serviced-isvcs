@@ -13,7 +13,7 @@
 #
 
 IMAGENAME := serviced-isvcs
-VERSION   := v56
+VERSION   := v57
 TAG       := zenoss/$(IMAGENAME):$(VERSION)
 
 REGISTRY_VERSION := 2.3.0
@@ -23,7 +23,7 @@ OPENTSDB_VERSION := 2.2.0
 HBASE_VERSION := 0.94.16
 OPENTSDB_HBASE_TARBALL := build/opentsdb/opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz
 
-ES_LOGSTASH_VERSION := 2.3.3
+ES_LOGSTASH_VERSION := 2.4.4
 ES_LOGSTASH_TARBALL := build/elasticsearch-logstash/elasticsearch-logstash-$(ES_LOGSTASH_VERSION).tar.gz
 
 
