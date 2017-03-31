@@ -21,9 +21,8 @@ RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/ela
 ENV ES_LOGSTASH_VERSION %ES_LOGSTASH_VERSION%
 ADD es-logstash-addendum.yaml /var/es-logstash-addendum.yaml
 COPY elasticsearch-logstash-${ES_LOGSTASH_VERSION}.tar.gz /
-RUN wget -qO- https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-${ES_LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
+RUN wget -qO- https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${ES_LOGSTASH_VERSION}/elasticsearch-${ES_LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
     && ln -s /opt/elasticsearch-${ES_LOGSTASH_VERSION} /opt/elasticsearch-logstash \
-    && /opt/elasticsearch-${ES_LOGSTASH_VERSION}/bin/plugin install mobz/elasticsearch-head \
     && sed -i -e 's/^.*http.port.*$/http.port: 9100/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
     && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_logstash/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
     && sed -i -e 's/^.*network.host.*$/network.host: 0.0.0.0/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
@@ -54,8 +53,8 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY
     && /sbin/scrub.sh
 
 # Install Logstash
-ENV LOGSTASH_VERSION 2.3.3
-RUN wget -qO- https://download.elasticsearch.org/logstash/logstash/logstash-${LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
+ENV LOGSTASH_VERSION 2.4.1
+RUN wget -qO- https://download.elastic.co/logstash/logstash/logstash-${LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
     && ln -s /opt/logstash-${LOGSTASH_VERSION} /opt/logstash \
     && /opt/logstash-${LOGSTASH_VERSION}/bin/logstash-plugin install logstash-input-beats
 
@@ -79,9 +78,9 @@ RUN yum -y install      \
 ADD supervisor.conf /opt/zenoss/etc/supervisor.conf
 
 # Kibana
-ENV KIBANA_VERSION 4.5.2
-RUN wget -qO- https://download.elastic.co/kibana/kibana/kibana-${KIBANA_VERSION}-linux-x64.tar.gz | tar -C /opt -xz \
-    && mv /opt/kibana-${KIBANA_VERSION}-linux-x64 /opt/kibana-${KIBANA_VERSION} \
+ENV KIBANA_VERSION 4.6.4
+RUN wget -qO- https://download.elastic.co/kibana/kibana/kibana-${KIBANA_VERSION}-linux-x86_64.tar.gz | tar -C /opt -xz \
+    && mv /opt/kibana-${KIBANA_VERSION}-linux-x86_64 /opt/kibana-${KIBANA_VERSION} \
     && ln -s /opt/kibana-${KIBANA_VERSION} /opt/kibana \
     && sed -i -e 's@^.*elasticsearch.url.*$@elasticsearch.url: "http://elasticsearch:9100"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml \
     && sed -i -e 's@^.*server.basePath.*$@server.basePath: "/api/controlplane/kibana"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml \
