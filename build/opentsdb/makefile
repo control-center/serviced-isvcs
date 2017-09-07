@@ -32,8 +32,11 @@ build:
 	ln -s /opt/hbase-$(HBASE_VERSION) /opt/hbase
 	wget -qO- $(OPENTSDB_INSTALL) | tar -C /opt -xz
 	ln -s /opt/opentsdb-$(OPENTSDB_VERSION) /opt/opentsdb
+	# a similar hack went into zenoss/hbase-image, to workaround: https://github.com/OpenTSDB/opentsdb/issues/915
+	# remove this next opentsdb upgrade.
+	mkdir -p /opt/opentsdb/build/third_party; cp -r /opt/opentsdb/third_party/javacc /opt/opentsdb/build/third_party
 	cd /opt/opentsdb-$(OPENTSDB_VERSION) && COMPRESSION=NONE HBASE_HOME=/opt/hbase-$(HBASE_VERSION) ./build.sh
-	rm -rf /opt/opentsdb-$(OPENTSDB_VERSION)/build/gwt-unitCache /opt/opentsdb-$(OPENTSDB_VERSION)/build/third_party/gwt/gwt-dev-*.jar
+	rm -rf /opt/opentsdb/build/gwt-unitCache /opt/opentsdb/third_party/gwt/gwt-dev-*.jar
 	cd /opt/opentsdb-$(OPENTSDB_VERSION)/src/ && patch -p0 < $(TARGET)/create_table.sh.patch
 	cp $(TARGET)/hbase-site.xml /opt/hbase-$(HBASE_VERSION)/conf/hbase-site.xml
 	cp $(TARGET)/start-opentsdb.sh /opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh && chmod a+x /opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh
