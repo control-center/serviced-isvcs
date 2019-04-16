@@ -19,7 +19,7 @@ TAG       := zenoss/$(IMAGENAME):$(VERSION)
 REGISTRY_VERSION := 2.3.0
 REGISTRY_TARBALL := build/registry/registry-$(REGISTRY_VERSION).tar.gz
 
-OPENTSDB_VERSION := 2.3.0
+OPENTSDB_VERSION := 2.3.1
 HBASE_VERSION := 0.94.16
 OPENTSDB_HBASE_TARBALL := build/opentsdb/opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz
 
