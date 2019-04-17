@@ -22,7 +22,7 @@ default: $(TARBALL)
 $(TARBALL):
 	echo "Building $(TARBALL) ..."
 	docker run --rm -v "$(PWD)":$(TARGET) -w $(TARGET) \
-		-e HBASE_VERSION=$(HBASE_VERSION) -e OPENTSDB_VERSION=$(OPENTSDB_VERSION) maven:3.3.3-jdk-7 \
+		-e HBASE_VERSION=$(HBASE_VERSION) -e OPENTSDB_VERSION=$(OPENTSDB_VERSION) maven:3.6.0-jdk-7 \
 		/bin/bash -c "apt-get update && apt-get -y install make autoconf patch && make build"
 
 .PHONY: build
