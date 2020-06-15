@@ -3,18 +3,18 @@
 #
 # Disable dynamic scripting engine to address CVE-2014-3120 (CC-997)
 #
-script.disable_dynamic: true
-
-#
-# Disable groovy scripting engine to address CVE-2015-1427 (CC-997)
-#
-script.groovy.sandbox.enabled: false
+script.allowed_types: none
 
 #
 # Disable replication for a single-node cluster (CC-1164)
 #
-index.number_of_shards: 1
-index.number_of_replicas: 0
+#TODO No longer supported in settings. Need to do that via API
+#index.number_of_shards: 1
+#index.number_of_replicas: 0
 
-# Disable multicast
-discovery.zen.ping.multicast.enabled: false
+# Required for production
+network.host: 0.0.0.0
+discovery.seed_hosts: []
+node.name: node-1
+node.master: true
+cluster.initial_master_nodes: ["node-1"]
