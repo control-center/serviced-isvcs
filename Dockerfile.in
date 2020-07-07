@@ -12,8 +12,8 @@ RUN wget -qO- https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch
     && ln -s /opt/elasticsearch-${ES_SERVICED_VERSION} /opt/elasticsearch-serviced \
     && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_serviced/' /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
     && cat /var/es-serviced-addendum.yaml >> /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
-    && groupadd -g 1000 elastic \
-    && useradd elastic -u 1000 -g 1000 \
+    && groupadd -g 1001 elastic \
+    && useradd elastic -u 1001 -g 1001 \
     && chown elastic:elastic -R /opt/elasticsearch-${ES_SERVICED_VERSION} \
     && chown elastic:elastic /opt/elasticsearch-serviced \
     && /sbin/scrub.sh
