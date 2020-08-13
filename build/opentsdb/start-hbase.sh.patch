@@ -1,11 +1,11 @@
---- bin/start-hbase.sh.orig     2014-10-07 22:46:12.765559130 +0000
-+++ bin/start-hbase.sh  2014-10-07 22:47:05.037560645 +0000
-@@ -44,7 +44,7 @@ distMode=`$bin/hbase --config "$HBASE_CO
- 
- if [ "$distMode" == 'false' ] 
+--- bin/start-hbase.sh.orig	(date 1597840176574)
++++ bin/start-hbase.sh	(date 1597840176574)
+@@ -52,7 +52,7 @@
+
+ if [ "$distMode" == 'false' ]
  then
--  "$bin"/hbase-daemon.sh --config "${HBASE_CONF_DIR}" start master
-+  exec "$bin"/hbase-daemon.sh --config "${HBASE_CONF_DIR}" start master
+-  "$bin"/hbase-daemon.sh --config "${HBASE_CONF_DIR}" $commandToRun master $@
++  exec "$bin"/hbase-daemon.sh --config "${HBASE_CONF_DIR}" $commandToRun master $@
  else
-   "$bin"/hbase-daemons.sh --config "${HBASE_CONF_DIR}" start zookeeper
-   "$bin"/hbase-daemon.sh --config "${HBASE_CONF_DIR}" start master 
+   "$bin"/hbase-daemons.sh --config "${HBASE_CONF_DIR}" $commandToRun zookeeper
+   "$bin"/hbase-daemon.sh --config "${HBASE_CONF_DIR}" $commandToRun master
