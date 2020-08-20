@@ -13,14 +13,14 @@
 #
 
 IMAGENAME := serviced-isvcs
-VERSION   := v66
+VERSION   := v67
 TAG       := zenoss/$(IMAGENAME):$(VERSION)
 
 REGISTRY_VERSION := 2.3.0
 REGISTRY_TARBALL := build/registry/registry-$(REGISTRY_VERSION).tar.gz
 
 OPENTSDB_VERSION := 2.3.1
-HBASE_VERSION := 0.94.16
+HBASE_VERSION := 0.99.2
 OPENTSDB_HBASE_TARBALL := build/opentsdb/opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz
 
 ES_LOGSTASH_VERSION := 2.4.4

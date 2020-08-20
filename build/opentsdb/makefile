@@ -12,7 +12,7 @@
 # limitations under the License.
 
 TARBALL          := opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz
-HBASE_INSTALL    := https://archive.apache.org/dist/hbase/hbase-$(HBASE_VERSION)/hbase-$(HBASE_VERSION).tar.gz
+HBASE_INSTALL    := https://archive.apache.org/dist/hbase/hbase-$(HBASE_VERSION)/hbase-$(HBASE_VERSION)-bin.tar.gz
 OPENTSDB_INSTALL := https://github.com/OpenTSDB/opentsdb/releases/download/v$(OPENTSDB_VERSION)/opentsdb-$(OPENTSDB_VERSION).tar.gz
 TARGET           := /mnt/pwd
 
