@@ -1,8 +1,10 @@
-FROM zenoss/centos-base:1.1.6-java
+FROM zenoss/centos-base:1.1.7-java
 MAINTAINER Zenoss <dev@zenoss.com>
 
 # Create mount point for isvcs resources
 RUN mkdir -p /usr/local/serviced/resources
+
+RUN yum -y --setopt=tsflags="nodocs" install java-11-openjdk-headless && /sbin/scrub.sh
 
 # Install serviced's Elastic
 ENV ES_SERVICED_VERSION 7.7.1
