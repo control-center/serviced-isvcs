@@ -13,7 +13,7 @@
 #
 
 IMAGENAME := serviced-isvcs
-VERSION   := v68-dev
+VERSION   := v69-dev
 TAG       := zenoss/$(IMAGENAME):$(VERSION)
 
 REGISTRY_VERSION := 2.3.0
@@ -23,8 +23,8 @@ OPENTSDB_VERSION := 2.3.1
 HBASE_VERSION := 0.99.2
 OPENTSDB_HBASE_TARBALL := build/opentsdb/opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz
 
-ES_LOGSTASH_VERSION := 2.4.4
-ES_LOGSTASH_TARBALL := build/elasticsearch-logstash/elasticsearch-logstash-$(ES_LOGSTASH_VERSION).tar.gz
+ELK_VERSION := 7.12.0
+ES_LOGSTASH_TARBALL := build/elasticsearch-logstash/elasticsearch-logstash-$(ELK_VERSION).tar.gz
 
 
 $(REGISTRY_TARBALL):
@@ -44,12 +44,12 @@ clean-opentsdb-hbase:
 	cd build/opentsdb;make OPENTSDB_VERSION=$(OPENTSDB_VERSION) HBASE_VERSION=$(HBASE_VERSION) clean
 
 $(ES_LOGSTASH_TARBALL):
-	cd build/elasticsearch-logstash;make VERSION=$(ES_LOGSTASH_VERSION)
+	cd build/elasticsearch-logstash;make VERSION=$(ELK_VERSION)
 
 build-elasticsearch-logstash: $(ES_LOGSTASH_TARBALL)
 
 clean-elasticsearch-logstash:
-	cd build/elasticsearch-logstash;make VERSION=$(ES_LOGSTASH_VERSION) clean
+	cd build/elasticsearch-logstash;make VERSION=$(ELK_VERSION) clean
 
 .PHONY: default build clean
 default: build
@@ -58,7 +58,7 @@ build: build-registry build-opentsdb-hbase build-elasticsearch-logstash
 	cp $(REGISTRY_TARBALL) ./
 	cp $(OPENTSDB_HBASE_TARBALL) ./
 	cp $(ES_LOGSTASH_TARBALL) ./
-	sed -e 's/%REGISTRY_VERSION%/$(REGISTRY_VERSION)/g; s/%OPENTSDB_VERSION%/$(OPENTSDB_VERSION)/g; s/%HBASE_VERSION%/$(HBASE_VERSION)/g; s/%ES_LOGSTASH_VERSION%/$(ES_LOGSTASH_VERSION)/g' Dockerfile.in > ./Dockerfile
+	sed -e 's/%REGISTRY_VERSION%/$(REGISTRY_VERSION)/g; s/%OPENTSDB_VERSION%/$(OPENTSDB_VERSION)/g; s/%HBASE_VERSION%/$(HBASE_VERSION)/g; s/%ELK_VERSION%/$(ELK_VERSION)/g' Dockerfile.in > ./Dockerfile
 	docker build -t $(TAG) .
 
 # Don't generate an error if the image does not exist

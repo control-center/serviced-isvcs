@@ -22,20 +22,20 @@ RUN wget -qO- https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch
 
 
 # Install logstash's Elastic
-ENV ES_LOGSTASH_VERSION %ES_LOGSTASH_VERSION%
+ENV ELK_VERSION %ELK_VERSION%
 ADD es-logstash-addendum.yaml /var/es-logstash-addendum.yaml
-COPY elasticsearch-logstash-${ES_LOGSTASH_VERSION}.tar.gz /
-RUN wget -qO- https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${ES_LOGSTASH_VERSION}/elasticsearch-${ES_LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
-    && ln -s /opt/elasticsearch-${ES_LOGSTASH_VERSION} /opt/elasticsearch-logstash \
-    && sed -i -e 's/^.*http.port.*$/http.port: 9100/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
-    && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_logstash/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
-    && sed -i -e 's/^.*network.host.*$/network.host: 0.0.0.0/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
-    && sed -i -e 's/^# bootstrap.memory_lock: true/bootstrap.memory_lock: true/' /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
-    && cat /var/es-logstash-addendum.yaml >> /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/elasticsearch.yml \
-    && /var/changeESLogProperties.sh /opt/elasticsearch-${ES_LOGSTASH_VERSION}/config/logging.yml \
+COPY elasticsearch-logstash-${ELK_VERSION}.tar.gz /
+RUN wget -qO- https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ELK_VERSION}-linux-x86_64.tar.gz | tar -C /opt -xz \
+    && ln -s /opt/elasticsearch-${ELK_VERSION} /opt/elasticsearch-logstash \
+    && sed -i -e 's/^.*http.port.*$/http.port: 9100/' /opt/elasticsearch-${ELK_VERSION}/config/elasticsearch.yml \
+    && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_logstash/' /opt/elasticsearch-${ELK_VERSION}/config/elasticsearch.yml \
+    && sed -i -e 's/^# bootstrap.memory_lock: true/bootstrap.memory_lock: true/' /opt/elasticsearch-${ELK_VERSION}/config/elasticsearch.yml \
+    && cat /var/es-logstash-addendum.yaml >> /opt/elasticsearch-${ELK_VERSION}/config/elasticsearch.yml \
     && pip install --no-cache-dir elasticsearch-curator==3.5.0 \
+    && chown elastic:elastic -R /opt/elasticsearch-${ELK_VERSION} \
+    && chown elastic:elastic /opt/elasticsearch-logstash \
     && /sbin/scrub.sh
-ADD es-logstash-start.sh /opt/elasticsearch-${ES_LOGSTASH_VERSION}/bin
+ADD es-logstash-start.sh /opt/elasticsearch-${ELK_VERSION}/bin
 
 # Install metric consumer
 ENV CONSUMER_VERSION 0.1.5
@@ -58,10 +58,10 @@ RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY
     && /sbin/scrub.sh
 
 # Install Logstash
-ENV LOGSTASH_VERSION 2.4.1
-RUN wget -qO- https://download.elastic.co/logstash/logstash/logstash-${LOGSTASH_VERSION}.tar.gz | tar -C /opt -xz \
-    && ln -s /opt/logstash-${LOGSTASH_VERSION} /opt/logstash \
-    && /opt/logstash-${LOGSTASH_VERSION}/bin/logstash-plugin install --local logstash-input-beats
+RUN wget -qO- https://artifacts.elastic.co/downloads/logstash/logstash-${ELK_VERSION}-linux-x86_64.tar.gz | tar -C /opt -xz \
+    && ln -s /opt/logstash-${ELK_VERSION} /opt/logstash \
+    && /opt/logstash-${ELK_VERSION}/bin/logstash-plugin install --local logstash-input-beats \
+    && /opt/logstash-${ELK_VERSION}/bin/logstash-plugin install logstash-filter-multiline
 
 # Install Docker registry
 ENV REGISTRY_VERSION %REGISTRY_VERSION%
@@ -83,12 +83,14 @@ RUN yum -y install      \
 ADD supervisor.conf /opt/zenoss/etc/supervisor.conf
 
 # Kibana
-ENV KIBANA_VERSION 4.6.4
-RUN wget -qO- https://download.elastic.co/kibana/kibana/kibana-${KIBANA_VERSION}-linux-x86_64.tar.gz | tar -C /opt -xz \
-    && mv /opt/kibana-${KIBANA_VERSION}-linux-x86_64 /opt/kibana-${KIBANA_VERSION} \
-    && ln -s /opt/kibana-${KIBANA_VERSION} /opt/kibana \
-    && sed -i -e 's@^.*elasticsearch.url.*$@elasticsearch.url: "http://elasticsearch:9100"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml \
-    && sed -i -e 's@^.*server.basePath.*$@server.basePath: "/api/controlplane/kibana"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml \
-    && sed -i -e 's@^.*kibana.index:.*$@kibana.index: "kibana-int"@' /opt/kibana-${KIBANA_VERSION}/config/kibana.yml
+RUN wget -qO- https://artifacts.elastic.co/downloads/kibana/kibana-${ELK_VERSION}-linux-x86_64.tar.gz | tar -C /opt -xz \
+    && mv /opt/kibana-${ELK_VERSION}-linux-x86_64 /opt/kibana-${ELK_VERSION} \
+    && ln -s /opt/kibana-${ELK_VERSION} /opt/kibana \
+    && sed -i -e 's@^#elasticsearch.hosts:.*$@elasticsearch.hosts: ["http://elasticsearch:9100"]@' /opt/kibana-${ELK_VERSION}/config/kibana.yml \
+    && sed -i -e 's@^#server.basePath:.*$@server.basePath: "/api/controlplane/kibana"@' /opt/kibana-${ELK_VERSION}/config/kibana.yml \
+    && sed -i -e 's@^.*kibana.index:.*$@kibana.index: "kibana-int"@' /opt/kibana-${ELK_VERSION}/config/kibana.yml \
+    && sed -i -e 's@^#server.port:.*$@server.port: 5601@' /opt/kibana-${ELK_VERSION}/config/kibana.yml \
+    && sed -i -e 's@^#server.host:.*$@server.host: "0"@' /opt/kibana-${ELK_VERSION}/config/kibana.yml \
+    && sed -i -e 's@^#server.rewriteBasePath:.*$@server.rewriteBasePath: false@' /opt/kibana-${ELK_VERSION}/config/kibana.yml
 # HACK: Run kibana so that it will optimize the bundles
 RUN /opt/kibana/bin/kibana 2>&1 | grep -m 1 "Optimization of .* complete in .* seconds"
