@@ -5,10 +5,10 @@ NODE_NAME=$1
 CLUSTER_NAME=$2
 
 # If the cluster is being initialized, pre-populate the data
-if [ ! -d $ES_DATA/$CLUSTER_NAME ]; then
+if [ ! -d $ES_DATA/nodes ]; then
     echo "Initializing kibana indices for serviced"
-    mkdir -p $ES_DATA/$CLUSTER_NAME
-    tar -xzf /elasticsearch-logstash-$ELK_VERSION.tar.gz -C $ES_DATA/$CLUSTER_NAME
+    mkdir -p $ES_DATA
+    tar -xzf /elasticsearch-logstash-$ELK_VERSION.tar.gz -C $ES_DATA
     chown elastic:elastic -R /opt/elasticsearch-logstash/*
 fi
 
