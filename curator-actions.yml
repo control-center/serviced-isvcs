@@ -1,0 +1,29 @@
+actions:
+  1:
+    action: delete_indices
+    description: "Purge logstash entries older than max age"
+    options:
+      ignore_empty_list: true
+      allow_ilm_indices: true
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: logstash-
+    - filtertype: age
+      source: name
+      direction: older
+      timestring: '%Y.%m.%d'
+      unit: days
+      unit_count: ${MAX_AGE_DAYS}
+  2:
+    action: delete_indices
+    description: "Purge logstash entries to be below max size"
+    options:
+      ignore_empty_list: true
+      allow_ilm_indices: true
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: logstash-
+    - filtertype: space
+      disk_space: ${MAX_SIZE_GB}

@@ -24,6 +24,8 @@ RUN wget -qO- https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch
 # Install logstash's Elastic
 ENV ELK_VERSION %ELK_VERSION%
 ADD es-logstash-addendum.yaml /var/es-logstash-addendum.yaml
+ADD curator-actions.yml /opt/curator/curator-actions.yml
+ADD curator-config.yml /opt/curator/curator-config.yml
 COPY elasticsearch-logstash-${ELK_VERSION}.tar.gz /
 RUN wget -qO- https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ELK_VERSION}-linux-x86_64.tar.gz | tar -C /opt -xz \
     && ln -s /opt/elasticsearch-${ELK_VERSION} /opt/elasticsearch-logstash \
@@ -31,7 +33,9 @@ RUN wget -qO- https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch
     && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_logstash/' /opt/elasticsearch-${ELK_VERSION}/config/elasticsearch.yml \
     && sed -i -e 's/^# bootstrap.memory_lock: true/bootstrap.memory_lock: true/' /opt/elasticsearch-${ELK_VERSION}/config/elasticsearch.yml \
     && cat /var/es-logstash-addendum.yaml >> /opt/elasticsearch-${ELK_VERSION}/config/elasticsearch.yml \
-    && pip install --no-cache-dir elasticsearch-curator==3.5.0 \
+    && yum -y remove python-requests \
+    && pip install --no-cache-dir requests==2.24.0 elasticsearch-curator==5.8.3 \
+    && chown elastic:elastic -R /opt/curator \
     && chown elastic:elastic -R /opt/elasticsearch-${ELK_VERSION} \
     && chown elastic:elastic /opt/elasticsearch-logstash \
     && /sbin/scrub.sh
@@ -93,4 +97,5 @@ RUN wget -qO- https://artifacts.elastic.co/downloads/kibana/kibana-${ELK_VERSION
     && sed -i -e 's@^#server.host:.*$@server.host: "0"@' /opt/kibana-${ELK_VERSION}/config/kibana.yml \
     && sed -i -e 's@^#server.rewriteBasePath:.*$@server.rewriteBasePath: false@' /opt/kibana-${ELK_VERSION}/config/kibana.yml
 # HACK: Run kibana so that it will optimize the bundles
-RUN /opt/kibana/bin/kibana 2>&1 | grep -m 1 "Optimization of .* complete in .* seconds"
+# RUN /opt/kibana/bin/kibana 2>&1 | grep -m 1 "Optimization of .* complete in .* seconds"
+RUN /opt/kibana/bin/kibana --allow-root --optimize
