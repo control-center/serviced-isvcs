@@ -1,0 +1,11 @@
+client:
+  hosts:
+    - 127.0.0.1
+  port: ${ES_PORT}
+  use_ssl: False
+  ssl_no_validate: False
+
+logging:
+  loglevel: INFO
+  logformat: default
+  blacklist: ['elasticsearch', 'urllib3']
