@@ -3,22 +3,21 @@
 #
 # Disable dynamic scripting engine to address CVE-2014-3120 (CC-997)
 #
-script.inline: false
-script.indexed: false
-
-#
-# Disable groovy scripting engine to address CVE-2015-1427 (CC-997)
-#
-script.groovy.sandbox.enabled: false
-
+script.allowed_types: inline
 #
 # Disable replication for a single-node cluster (CC-1164)
 #
-index.number_of_shards: 1
-index.number_of_replicas: 0
+#TODO No longer supported in settings. Need to do that via API
+#index.number_of_shards: 1
+#index.number_of_replicas: 0
 
 #
 # Disable allocation disk threshold decider
 #
 cluster.routing.allocation.disk.threshold_enabled: false
 
+# Required for production
+network.host: 0.0.0.0
+discovery.seed_hosts: []
+node.master: true
+cluster.initial_master_nodes: ["elasticsearch-logstash"]
