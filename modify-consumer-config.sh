@@ -28,6 +28,9 @@ sed -i 's/\(authEnabled:.*\)true/\1false/' ${CONFIG_FILE}
 # Remove the HTTP poster config
 sed -i -e '/- {posterType: http/d' ${CONFIG_FILE}
 
+# Change the default port to the opentsdb client
+sed -i -e 's/\(port:.*\)4242/\14343/' ${CONFIG_FILE}
+
 # Add a default metric tag named 'controlplane_service_id' with the value '$env[CONTROLPLANE_SERVICE_ID]'
 #   serviced will inject the environment variable CONTROLPLANE_SERVICE_ID when the container is created.
 sed -i 's/\(.*\)metricReporters:/\1defaultMetricTags:\n\1  controlplane_service_id\: \"\$env\[CONTROLPLANE_SERVICE_ID\]\"\n\n\1metricReporters:/g' ${CONFIG_FILE}
