@@ -12,6 +12,7 @@ ADD es-serviced-addendum.yaml /var/es-serviced-addendum.yaml
 ADD changeESLogProperties.sh /var/changeESLogProperties.sh
 RUN wget -qO- https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_SERVICED_VERSION}-linux-x86_64.tar.gz | tar -C /opt -xz \
     && ln -s /opt/elasticsearch-${ES_SERVICED_VERSION} /opt/elasticsearch-serviced \
+    && echo "-Dlog4j2.formatMsgNoLookups=true" >> /opt/elasticsearch-${ES_SERVICED_VERSION}/config/jvm.options.d/jvm.options \
     && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_serviced/' /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
     && cat /var/es-serviced-addendum.yaml >> /opt/elasticsearch-${ES_SERVICED_VERSION}/config/elasticsearch.yml \
     && groupadd -g 1001 elastic \
@@ -29,6 +30,8 @@ ADD curator-config.yml /opt/curator/curator-config.yml
 COPY elasticsearch-logstash-${ELK_VERSION}.tar.gz /
 RUN wget -qO- https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ELK_VERSION}-linux-x86_64.tar.gz | tar -C /opt -xz \
     && ln -s /opt/elasticsearch-${ELK_VERSION} /opt/elasticsearch-logstash \
+    && echo "-Dlog4j2.formatMsgNoLookups=true" >> /opt/elasticsearch-${ELK_VERSION}/config/jvm.options.d/jvm.options \
+    && zip -q -d /opt/elasticsearch-logstash/lib/log4j-core-2.* org/apache/logging/log4j/core/lookup/JndiLookup.class \
     && sed -i -e 's/^.*http.port.*$/http.port: 9100/' /opt/elasticsearch-${ELK_VERSION}/config/elasticsearch.yml \
     && sed -i -e 's/^.*cluster.name.*$/cluster.name: elasticsearch_logstash/' /opt/elasticsearch-${ELK_VERSION}/config/elasticsearch.yml \
     && sed -i -e 's/^# bootstrap.memory_lock: true/bootstrap.memory_lock: true/' /opt/elasticsearch-${ELK_VERSION}/config/elasticsearch.yml \
