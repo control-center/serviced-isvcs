@@ -12,4 +12,4 @@ if [ ! -d $ES_DATA/nodes ]; then
     chown elastic:elastic -R /opt/elasticsearch-logstash/*
 fi
 
-export JAVA_HOME=/usr/lib/jvm/jre-11; su elastic -c 'exec /opt/elasticsearch-logstash/bin/elasticsearch -Enode.name='"${NODE_NAME}"' -Ecluster.name='"${CLUSTER_NAME}"
+export JAVA_HOME=/opt/elasticsearch-logstash/jdk; su elastic -c 'exec /opt/elasticsearch-logstash/bin/elasticsearch -Enode.name='"${NODE_NAME}"' -Ecluster.name='"${CLUSTER_NAME}"
