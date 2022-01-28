@@ -18,3 +18,4 @@ discovery.seed_hosts: []
 node.name: node-1
 node.master: true
 cluster.initial_master_nodes: ["node-1"]
+ingest.geoip.downloader.enabled: false
