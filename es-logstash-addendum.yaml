@@ -21,3 +21,4 @@ network.host: 0.0.0.0
 discovery.seed_hosts: []
 node.master: true
 cluster.initial_master_nodes: ["elasticsearch-logstash"]
+ingest.geoip.downloader.enabled: false
