@@ -31,6 +31,10 @@ sed -i -e '/CONTROLPLANE_CONSUMER_USERNAME/d' ${CONFIG_FILE}
 # Change the default port to the one used in isvcs
 sed -i -e 's/\(localhost,.*port:.*\)8080/\18443/' ${CONFIG_FILE}
 
+# Change the default port to the opentsdb
+sed -i -e 's/\(127\.0\.0\.1:.*\)4242/\14343/' ${CONFIG_FILE}
+
+
 # Remove unnecessary credential props
 sed -i -e 's/ username\: \"\$zcreds\[\]\", password\: \"\$zcreds\[\]\",//g' ${CONFIG_FILE}
 

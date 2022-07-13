@@ -37,17 +37,19 @@ RUN cp -r /opt/elasticsearch-${ELK_VERSION} /opt/elasticsearch-logstash \
 ADD es-logstash-start.sh /opt/elasticsearch-logstash/bin
 
 # Install metric consumer
-ENV CONSUMER_VERSION 0.1.5
+ENV CONSUMER_VERSION 0.1.16
 ADD modify-consumer-config.sh /var/modify-consumer-config.sh
 RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-${CONSUMER_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
     && chmod a+x /opt/zenoss/bin/metric-consumer-app.sh \
+    && sed -i -e '2s/^/JAVA_HOME=\/usr\/lib\/jvm\/java-11-openjdk-11.0.15.0.9-2.el7_9.x86_64\//' /opt/zenoss/bin/metric-consumer-app.sh \
+    && sed -i -e 's/exec java/exec $JAVA_HOME\/bin\/java/' /opt/zenoss/bin/metric-consumer-app.sh \
     && ln -s /opt/zenoss/etc/metric-consumer-app/metric-consumer-app_supervisor.conf /opt/zenoss/etc/supervisor \
     && /var/modify-consumer-config.sh /opt/zenoss/etc/metric-consumer-app/configuration.yaml \
     && /sbin/scrub.sh
 
 # Install query service
-ENV QUERY_VERSION 0.1.22
+ENV QUERY_VERSION 0.1.39
 ADD modify-query-config.sh /var/modify-query-config.sh
 RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
@@ -69,6 +71,8 @@ ADD registry-${REGISTRY_VERSION}.tar.gz  /
 # Install hbase and opentsdb
 ENV OPENTSDB_VERSION %OPENTSDB_VERSION%
 ENV HBASE_VERSION %HBASE_VERSION%
+ENV HAPROXY_VERSION %HAPROXY_VERSION%
+
 ADD set-opentsdb-table-ttl.sh /var/set-opentsdb-table-ttl.sh
 ADD opentsdb-${OPENTSDB_VERSION}_hbase-${HBASE_VERSION}.tar.gz /
 RUN yum -y install      \
@@ -76,7 +80,18 @@ RUN yum -y install      \
         make            \
         snappy          \
         lzo             \
+        gcc-c++         \
+        openssl-devel   \
+        pcre-static     \
+        pcre-devel      \
     && /sbin/scrub.sh
+
+# Install HaProxy
+RUN wget -qO- http://www.haproxy.org/download/2.4/src/haproxy-${HAPROXY_VERSION}.tar.gz | tar -C /usr/src -xz \
+    && cd /usr/src/haproxy-${HAPROXY_VERSION} \
+    && mkdir -p /var/lib/haproxy \
+    && make TARGET=linux-glibc USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1 USE_CRYPT_H=1 USE_LIBCRYPT=1 \
+    && make install
 
 # Add supervisord config
 ADD supervisor.conf /opt/zenoss/etc/supervisor.conf

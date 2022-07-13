@@ -1,20 +1,11 @@
 --- create_table.sh.orig	2015-09-30 16:28:09.655672576 +0000
 +++ create_table.sh	2015-09-30 16:29:26.419672464 +0000
-@@ -10,6 +10,8 @@
-   exit 1
- }
- 
-+# TTL var for 30 days of data retention
-+TTL=2592000
- TSDB_TABLE=${TSDB_TABLE-'tsdb'}
- UID_TABLE=${UID_TABLE-'tsdb-uid'}
- TREE_TABLE=${TREE_TABLE-'tsdb-tree'}
-@@ -38,7 +40,7 @@
-   {NAME => 'name', COMPRESSION => '$COMPRESSION', BLOOMFILTER => '$BLOOMFILTER'}
- 
- create '$TSDB_TABLE',
--  {NAME => 't', VERSIONS => 1, COMPRESSION => '$COMPRESSION', BLOOMFILTER => '$BLOOMFILTER'}
-+  {NAME => 't', VERSIONS => 1, COMPRESSION => '$COMPRESSION', BLOOMFILTER => '$BLOOMFILTER', TTL => '$TTL'}
-   
- create '$TREE_TABLE',
-   {NAME => 't', VERSIONS => 1, COMPRESSION => '$COMPRESSION', BLOOMFILTER => '$BLOOMFILTER'}
+@@ -23,7 +23,7 @@
+ # This can save a lot of storage space.
+ DATA_BLOCK_ENCODING=${DATA_BLOCK_ENCODING-'DIFF'}
+ DATA_BLOCK_ENCODING=`echo "$DATA_BLOCK_ENCODING" | tr a-z A-Z`
+-TSDB_TTL=${TSDB_TTL-'FOREVER'}
++TSDB_TTL=${TSDB_TTL-'2592000'}
+
+ case $COMPRESSION in
+   (NONE|LZO|GZIP|SNAPPY)  :;;  # Known good.
