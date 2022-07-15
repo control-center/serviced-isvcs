@@ -13,7 +13,7 @@
 
 TARBALL          := opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz
 HBASE_INSTALL    := https://archive.apache.org/dist/hbase/hbase-$(HBASE_VERSION)/hbase-$(HBASE_VERSION)-bin.tar.gz
-OPENTSDB_INSTALL := https://github.com/OpenTSDB/opentsdb/releases/download/v$(OPENTSDB_VERSION)/opentsdb-$(OPENTSDB_VERSION).tar.gz
+OPENTSDB_INSTALL := https://github.com/OpenTSDB/opentsdb/archive/refs/tags/v$(OPENTSDB_VERSION).tar.gz
 TARGET           := /mnt/pwd
 
 .PHONY: default
@@ -39,6 +39,8 @@ build:
 	rm -rf /opt/opentsdb/build/gwt-unitCache /opt/opentsdb/third_party/gwt/gwt-dev-*.jar
 	cd /opt/opentsdb-$(OPENTSDB_VERSION)/src/ && patch -p0 < $(TARGET)/create_table.sh.patch
 	cp $(TARGET)/hbase-site.xml /opt/hbase-$(HBASE_VERSION)/conf/hbase-site.xml
+	mkdir -p /etc/haproxy/
+	cp $(TARGET)/haproxy.cfg /etc/haproxy/haproxy.cfg
 	cp $(TARGET)/start-opentsdb.sh /opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh && chmod a+x /opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh
 	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < $(TARGET)/hbase-daemon.sh.patch
 	cd /opt/hbase-$(HBASE_VERSION) && patch -p0 < $(TARGET)/start-hbase.sh.patch

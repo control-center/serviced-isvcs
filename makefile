@@ -13,13 +13,14 @@
 #
 
 IMAGENAME := serviced-isvcs
-VERSION   := v71
+VERSION   := v72
 TAG       := zenoss/$(IMAGENAME):$(VERSION)
 
 REGISTRY_VERSION := 2.3.0
 REGISTRY_TARBALL := build/registry/registry-$(REGISTRY_VERSION).tar.gz
 
-OPENTSDB_VERSION := 2.3.1
+OPENTSDB_VERSION := 2.4.1
+HAPROXY_VERSION := 2.4.17
 HBASE_VERSION := 0.99.2
 OPENTSDB_HBASE_TARBALL := build/opentsdb/opentsdb-$(OPENTSDB_VERSION)_hbase-$(HBASE_VERSION).tar.gz
 
@@ -58,7 +59,7 @@ build: build-registry build-opentsdb-hbase build-elasticsearch-logstash
 	cp $(REGISTRY_TARBALL) ./
 	cp $(OPENTSDB_HBASE_TARBALL) ./
 	cp $(ES_LOGSTASH_TARBALL) ./
-	sed -e 's/%REGISTRY_VERSION%/$(REGISTRY_VERSION)/g; s/%OPENTSDB_VERSION%/$(OPENTSDB_VERSION)/g; s/%HBASE_VERSION%/$(HBASE_VERSION)/g; s/%ELK_VERSION%/$(ELK_VERSION)/g' Dockerfile.in > ./Dockerfile
+	sed -e 's/%REGISTRY_VERSION%/$(REGISTRY_VERSION)/g; s/%OPENTSDB_VERSION%/$(OPENTSDB_VERSION)/g; s/%HAPROXY_VERSION%/$(HAPROXY_VERSION)/g; s/%HBASE_VERSION%/$(HBASE_VERSION)/g; s/%ELK_VERSION%/$(ELK_VERSION)/g' Dockerfile.in > ./Dockerfile
 	docker build -t $(TAG) .
 
 # Don't generate an error if the image does not exist
