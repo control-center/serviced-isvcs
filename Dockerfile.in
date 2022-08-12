@@ -37,19 +37,17 @@ RUN cp -r /opt/elasticsearch-${ELK_VERSION} /opt/elasticsearch-logstash \
 ADD es-logstash-start.sh /opt/elasticsearch-logstash/bin
 
 # Install metric consumer
-ENV CONSUMER_VERSION 0.1.16
+ENV CONSUMER_VERSION 0.1.5
 ADD modify-consumer-config.sh /var/modify-consumer-config.sh
 RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/metric-consumer-app-${CONSUMER_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
     && chmod a+x /opt/zenoss/bin/metric-consumer-app.sh \
-    && sed -i -e '2s/^/JAVA_HOME=\/usr\/lib\/jvm\/java-11-openjdk-11.0.15.0.9-2.el7_9.x86_64\//' /opt/zenoss/bin/metric-consumer-app.sh \
-    && sed -i -e 's/exec java/exec $JAVA_HOME\/bin\/java/' /opt/zenoss/bin/metric-consumer-app.sh \
     && ln -s /opt/zenoss/etc/metric-consumer-app/metric-consumer-app_supervisor.conf /opt/zenoss/etc/supervisor \
     && /var/modify-consumer-config.sh /opt/zenoss/etc/metric-consumer-app/configuration.yaml \
     && /sbin/scrub.sh
 
 # Install query service
-ENV QUERY_VERSION 0.1.39
+ENV QUERY_VERSION 0.1.22
 ADD modify-query-config.sh /var/modify-query-config.sh
 RUN mkdir -p /opt/zenoss/log /opt/zenoss/etc/supervisor /opt/zenoss/var
 RUN wget -qO- https://zenoss-pip.s3.amazonaws.com/packages/central-query-${QUERY_VERSION}-zapp.tar.gz | tar -C /opt/zenoss -xz \
