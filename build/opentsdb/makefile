@@ -23,7 +23,7 @@ $(TARBALL):
 	echo "Building $(TARBALL) ..."
 	docker run --rm -v "$(PWD)":$(TARGET) -w $(TARGET) \
 		-e HBASE_VERSION=$(HBASE_VERSION) -e OPENTSDB_VERSION=$(OPENTSDB_VERSION) maven:3.6.0-jdk-7 \
-		/bin/bash -c "apt-get update && apt-get -y install make autoconf patch && make build"
+		/bin/bash -c "apt-get update && apt-get -y install zip make autoconf patch && make build"
 
 .PHONY: build
 build:
@@ -39,6 +39,8 @@ build:
 	rm -rf /opt/opentsdb/build/gwt-unitCache /opt/opentsdb/third_party/gwt/gwt-dev-*.jar
 	cd /opt/opentsdb-$(OPENTSDB_VERSION)/src/ && patch -p0 < $(TARGET)/create_table.sh.patch
 	cp $(TARGET)/hbase-site.xml /opt/hbase-$(HBASE_VERSION)/conf/hbase-site.xml
+	zip -d /opt/hbase-$(HBASE_VERSION)/lib/log4j-1.2.17.jar org/apache/log4j/net/SocketServer.class
+	zip -d /opt/hbase-$(HBASE_VERSION)/lib/log4j-1.2.17.jar org/apache/log4j/net/JMSAppender.class
 	mkdir -p /etc/haproxy/
 	cp $(TARGET)/haproxy.cfg /etc/haproxy/haproxy.cfg
 	cp $(TARGET)/start-opentsdb.sh /opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh && chmod a+x /opt/opentsdb-$(OPENTSDB_VERSION)/build/start-opentsdb.sh
